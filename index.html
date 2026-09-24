@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>教學設備與專科教室借用系統</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root { 
@@ -154,235 +155,15 @@
 </head>
 <body>
 
-<!-- === 模擬資料庫 (Mock DB for GitHub Pages) === -->
-<script>
-  const DB_KEY = 'bookingAppLocalDB_v1';
-
-  // 預設資料
-  const defaultDB = {
-    users: [
-      { name: '管理員 (Admin)', email: 'admin@demo.com', pin: 'admin', isAdmin: true, realName: '系統管理員' },
-      { name: '王老師 (Teacher)', email: 'teacher1@demo.com', pin: 'teacher1', isAdmin: false, realName: '王小明老師' },
-      { name: '李老師 (Teacher)', email: 'teacher2@demo.com', pin: 'teacher2', isAdmin: false, realName: '李大華老師' }
-    ],
-    items: ['iPad平板車-A', 'iPad平板車-B', '筆電推車-A', '自然專科教室一', '自然專科教室二', '音樂教室'],
-    periods: [
-      { name: '第一節', start: '08:10', end: '09:00' },
-      { name: '第二節', start: '09:10', end: '10:00' },
-      { name: '第三節', start: '10:10', end: '11:00' },
-      { name: '第四節', start: '11:10', end: '12:00' },
-      { name: '第五節', start: '13:10', end: '14:00' },
-      { name: '第六節', start: '14:10', end: '15:00' },
-      { name: '第七節', start: '15:10', end: '16:00' },
-      { name: '第八節', start: '16:10', end: '17:00' }
-    ],
-    classes: ['101', '102', '103', '201', '202', '301', '302'],
-    bookings: [], 
-    restrictions: []
-  };
-
-  function getDB() {
-    const dbStr = localStorage.getItem(DB_KEY);
-    if (!dbStr) {
-      saveDB(defaultDB);
-      return defaultDB;
-    }
-    return JSON.parse(dbStr);
-  }
-
-  function saveDB(db) {
-    localStorage.setItem(DB_KEY, JSON.stringify(db));
-  }
-
-  // --- 模擬 API 延遲 Helper ---
-  function mockDelay(ms = 300) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // --- 模擬 Backend APIs ---
-  const MockAPI = {
-    async getLoginUserList() {
-      await mockDelay(200);
-      return getDB().users.map(u => ({ name: u.name }));
-    },
-    
-    async verifyLogin(name, pin) {
-      await mockDelay(400);
-      const db = getDB();
-      const user = db.users.find(u => u.name === name && u.pin === pin);
-      if (user) {
-        return { success: true, name: user.realName, email: user.email, isAdmin: user.isAdmin };
-      }
-      return { success: false, msg: "密碼(帳號)錯誤！請確認後再試。" };
-    },
-
-    async getAppStartupData(email, targetDate) {
-      await mockDelay(300);
-      const db = getDB();
-      const staticData = {
-        isLoggedIn: true,
-        userInfo: db.users.find(u => u.email === email),
-        users: db.users,
-        loginUsers: db.users.map(u => ({ name: u.name })),
-        items: db.items,
-        periods: db.periods,
-        classes: db.classes
-      };
-      
-      const defaultItem = db.items[0] || "";
-      let bookingStatus = null;
-      if (defaultItem && targetDate) {
-         bookingStatus = await this.getBookingStatus(targetDate, defaultItem);
-      }
-      
-      return { staticData, bookingStatus, defaultItem };
-    },
-
-    async getBookingStatus(targetDateStr, selectedItem) {
-      await mockDelay(300);
-      const db = getDB();
-      const baseDate = new Date(targetDateStr.replace(/-/g, '/'));
-      const dayOfWeek = baseDate.getDay(); 
-      const weekDates = [];
-      
-      for(let i = 0; i <= 6; i++) {
-        let d = new Date(baseDate);
-        d.setDate(baseDate.getDate() - dayOfWeek + i);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        weekDates.push(`${yyyy}-${mm}-${dd}`);
-      }
-
-      const records = db.bookings.filter(r => r.item === selectedItem && r.purpose !== '已取消').map(r => ({
-        date: r.date, period: r.period, user: r.user, email: r.email
-      }));
-
-      const restrictions = db.restrictions.filter(r => r.item === selectedItem).map(r => ({
-        date: r.date, period: r.period, note: r.note
-      }));
-
-      const dailyAll = db.bookings.filter(r => r.date === targetDateStr && r.purpose !== '已取消').map(r => ({
-        period: r.period, item: r.item, user: r.user
-      }));
-
-      return { weekDates, records, restrictions, serverNow: new Date().getTime(), dailyAll };
-    },
-
-    async submitBooking(d) {
-      await mockDelay(500);
-      const db = getDB();
-      const isBooked = db.bookings.some(r => r.date === d.date && r.period === d.period && r.item === d.item && r.purpose !== '已取消');
-      if (isBooked) return { success: false, msg: "手腳慢了一步！該時段剛剛已被其他人預約囉。" };
-
-      const newId = db.bookings.length > 0 ? Math.max(...db.bookings.map(b => b.rowId || 0)) + 1 : 2;
-      db.bookings.push({
-        rowId: newId,
-        date: d.date,
-        period: d.period,
-        item: d.item,
-        user: d.user,
-        purpose: d.purpose,
-        email: d.email,
-        keyStatus: "未借出"
-      });
-      saveDB(db);
-      return { success: true, msg: "預約成功！" };
-    },
-
-    async getMyRecords(email) {
-      await mockDelay(200);
-      const db = getDB();
-      return db.bookings.filter(r => r.email.toLowerCase() === email.toLowerCase());
-    },
-
-    async cancelBooking(rowId) {
-      await mockDelay(300);
-      const db = getDB();
-      const recordIndex = db.bookings.findIndex(r => r.rowId === rowId);
-      if (recordIndex !== -1) {
-        db.bookings[recordIndex].purpose = "已取消";
-        saveDB(db);
-      }
-      return "OK";
-    },
-
-    async getAdminDailyRecords(date) {
-      await mockDelay(200);
-      const db = getDB();
-      return db.bookings.filter(r => r.date === date && r.purpose !== "已取消");
-    },
-
-    async updateKeyStatus(id, s) {
-      const db = getDB();
-      const recordIndex = db.bookings.findIndex(r => r.rowId === id);
-      if (recordIndex !== -1) {
-        db.bookings[recordIndex].keyStatus = s;
-        saveDB(db);
-      }
-    },
-
-    async batchRestrictAdvanced(item, sDateStr, eDateStr, daysOfWeek, periods, note) {
-      await mockDelay(500);
-      const db = getDB();
-      const startDate = new Date(sDateStr.replace(/-/g, '/'));
-      const endDate = new Date(eDateStr.replace(/-/g, '/'));
-      let count = 0;
-
-      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        let dayOfWeek = d.getDay();
-        if (daysOfWeek.includes(dayOfWeek.toString())) {
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          let dateStr = `${yyyy}-${mm}-${dd}`;
-          
-          periods.forEach(p => { 
-            db.restrictions.push({ item: item, date: dateStr, period: p, note: note });
-            count++;
-          });
-        }
-      }
-      
-      if (count > 0) {
-        saveDB(db);
-        return `成功設定 ${count} 筆禁借紀錄！`;
-      } else {
-        throw new Error("所選區間內沒有符合的日期可設定。");
-      }
-    },
-
-    async getStatisticsData() {
-      await mockDelay(200);
-      const db = getDB();
-      let itemMap = {};
-      let userMap = {};
-      
-      db.bookings.forEach(row => {
-        if (row.purpose !== '已取消') {
-          if (row.item) { itemMap[row.item] = (itemMap[row.item] || 0) + 1; }
-          if (row.user) { userMap[row.user] = (userMap[row.user] || 0) + 1; }
-        }
-      });
-      
-      let items = Object.keys(itemMap).map(k => ({ name: k, count: itemMap[k] }));
-      let users = Object.keys(userMap).map(k => ({ name: k, count: userMap[k] }));
-      
-      return { items: items, users: users };
-    }
-  };
-</script>
-
-
 <div id="loginOverlay">
   <div class="login-box">
-    <h2>🔐 系統登入(Demo)</h2>
+    <h2>🔐 系統登入</h2>
     <select id="loginNameSelect" class="login-input" style="margin-bottom: 15px;"><option value="">載入名單中...</option></select>
     
-    <input type="text" id="loginPinInput" class="login-input" placeholder="請輸入帳號 (例如: admin / teacher1)" style="margin-bottom: 8px;">
+    <input type="text" id="loginPinInput" class="login-input" placeholder="請輸入帳號" style="margin-bottom: 8px;">
     <div style="font-size: 10pt; color: #555; text-align: left; margin-bottom: 18px; line-height: 1.4; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px dashed #ccc;">
-      💡 這是一個在線展示版本，資料儲存於您的瀏覽器中。<br>
-      <span style="font-size: 9pt; color: #888;">(預設管理員帳號：admin / 老師帳號：teacher1)</span>
+      💡 請輸入你的 <b>mail.chanes.tc.edu.tw</b> 帳號<br>
+      <span style="font-size: 9pt; color: #888;">(只需輸入 @ 前的帳號即可)</span>
     </div>
 
     <button id="btnLoginSubmit" class="btn-login" onclick="doLogin()">確認登入</button>
@@ -391,7 +172,7 @@
 
 <div id="mainApp" style="display:none;">
   <div class="app-header">
-    <div class="app-title">📅 設備預約系統 (GitHub Pages版)</div>
+    <div class="app-title">📅 設備預約系統</div>
     <div class="app-nav">
       <div class="nav-item active" onclick="switchAppView('booking')" id="nav-booking">📝 我要預約</div>
       <div class="nav-item" onclick="switchAppView('myrecords')" id="nav-myrecords">👤 我的紀錄</div>
@@ -418,7 +199,6 @@
           <select id="adminSwitchName" class="admin-input"></select>
           <button id="btnSwitch" class="btn-admin-active" onclick="switchUserProxy()">切換身分</button>
           <button id="btnReset" class="btn-admin-inactive" onclick="resetUserProxy()">還原本人</button>
-          <button id="btnResetData" class="btn-admin-inactive" style="background:#fff0f0; color:#c0392b; border-color:#fadbd8; margin-left:auto;" onclick="resetLocalDB()">🗑️ 重設展示資料</button>
         </div>
       </div>
 
@@ -560,6 +340,44 @@
 </div>
 
 <script>
+  // ================= 核心：API 呼叫封裝 =================
+  
+  // ⚠️ 部署說明 ⚠️
+  // 1. 將 `code.gs` 貼入 Google Apps Script。
+  // 2. 點擊右上角「部署」 -> 「新增部署作業」。
+  // 3. 類型選擇「網頁應用程式 (Web App)」。
+  // 4. "執行身份" 必須選擇「我 (你的帳號)」。
+  // 5. "誰可以存取" 必須選擇「所有人 (Anyone)」。
+  // 6. 點擊「部署」，並授權權限。
+  // 7. 複製產生的「網頁應用程式網址 (URL)」，貼到下方的 GAS_API_URL 變數中。
+  
+  const GAS_API_URL = "在此貼上你部署後的 Google Apps Script 網址"; 
+
+  const AppAPI = {
+    async call(action, payload = {}) {
+      if(GAS_API_URL.includes("在此貼上")) {
+        alert("請先在原始碼中設定 GAS_API_URL！");
+        return Promise.reject("API URL not set");
+      }
+
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 避免 CORS 預檢複雜化，使用 text/plain
+          body: JSON.stringify({ action: action, payload: payload })
+        });
+        
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+        return data;
+      } catch (error) {
+        console.error(`API 呼叫失敗 [${action}]:`, error);
+        throw error;
+      }
+    }
+  };
+
+
   // ================= 全域變數與狀態 =================
   let staticData = { items: [], classes: [], periods: [], users: [], userInfo: null };
   let originalAdminName = ""; 
@@ -574,7 +392,7 @@
 
   let inactivityTimer;
   let adminAutoRefreshTimer; 
-  const INACTIVITY_TIME_MS = 15 * 60 * 1000; // 延長至15分鐘方便測試
+  const INACTIVITY_TIME_MS = 5 * 60 * 1000; 
 
   function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
@@ -629,12 +447,17 @@
     } else {
       document.getElementById('loginOverlay').style.display = 'flex';
       
-      // 替換原本的 google.script.run.getLoginUserList()
-      MockAPI.getLoginUserList().then(users => {
+      const localUsers = localStorage.getItem('localUserList_v2');
+      if (localUsers) {
+         renderLoginNameSelect(JSON.parse(localUsers));
+      }
+      
+      AppAPI.call('getLoginUserList').then(users => {
         if(users && users.length > 0) {
-           renderLoginNameSelect(users); 
+           localStorage.setItem('localUserList_v2', JSON.stringify(users));
+           if (!localUsers) renderLoginNameSelect(users); 
         }
-      });
+      }).catch(err => console.error("獲取使用者名單失敗", err));
     }
   };
 
@@ -646,8 +469,7 @@
     const btn = document.getElementById('btnLoginSubmit');
     btn.innerText = "驗證中..."; btn.disabled = true;
 
-    // 替換原本的 google.script.run.verifyLogin(name, pin)
-    MockAPI.verifyLogin(name, pin).then(res => {
+    AppAPI.call('verifyLogin', { name, pin }).then(res => {
          if(res.success) {
             const authData = { name: res.name, email: res.email, isAdmin: res.isAdmin };
             localStorage.setItem('appAuthSession', JSON.stringify(authData));
@@ -658,6 +480,9 @@
             showSystemAlert(res.msg);
             btn.innerText = "確認登入"; btn.disabled = false;
          }
+      }).catch(err => {
+         showSystemAlert("系統連線發生錯誤，請稍後再試。");
+         btn.innerText = "確認登入"; btn.disabled = false;
       });
   }
 
@@ -671,17 +496,8 @@
     document.getElementById('loginPinInput').value = '';
     
     if (isAutoLogout) {
-      showSystemAlert("⏱️ 您已閒置過久，為保護帳號安全，系統已自動為您登出。");
+      showSystemAlert("⏱️ 您已閒置超過 5 分鐘，為保護帳號安全，系統已自動為您登出。");
     }
-  }
-
-  // 給測試用的小工具
-  function resetLocalDB() {
-    showSystemConfirm("確定要清除所有測試資料，還原回初始狀態嗎？", () => {
-      localStorage.removeItem(DB_KEY);
-      localStorage.removeItem('appAuthSession');
-      location.reload();
-    });
   }
 
   function initSPA() {
@@ -716,8 +532,10 @@
     toggleLoadingState(true); 
     renderSkeleton();
     
-    // 替換原本的 google.script.run.getAppStartupData(...)
-    MockAPI.getAppStartupData(staticData.userInfo.email, document.getElementById('targetDate').value).then(data => {
+    AppAPI.call('getAppStartupData', { 
+        email: staticData.userInfo.email, 
+        targetDate: document.getElementById('targetDate').value 
+    }).then(data => {
       if (data) {
         if(data.staticData) {
           if(data.staticData.items) staticData.items = data.staticData.items;
@@ -736,6 +554,9 @@
       } else {
         refreshBooking(); 
       }
+    }).catch(err => {
+       showSystemAlert("系統連線發生錯誤，無法載入初始資料。");
+       toggleLoadingState(false);
     });
   }
 
@@ -835,6 +656,7 @@
     const targetItem = document.getElementById('itemSelect').value;
     if(!targetDate || !targetItem || targetItem.includes('無可用')) return;
 
+    // 每次查詢建立新的序號，避免較慢的舊回應覆蓋最新畫面。
     const requestSerial = ++bookingRequestSerial;
 
     document.getElementById('syncTag').innerText = "(同步中...)";
@@ -842,8 +664,8 @@
     renderSkeleton();
     document.getElementById('dailyBoard').style.display = 'none';
     
-    // 替換原本的 google.script.run.getBookingStatus(...)
-    MockAPI.getBookingStatus(targetDate, targetItem).then(status => {
+    AppAPI.call('getBookingStatus', { targetDate, selectedItem: targetItem })
+      .then(status => {
         const isLatestRequest = requestSerial === bookingRequestSerial;
         const isSameSelection = document.getElementById('targetDate').value === targetDate &&
                                 document.getElementById('itemSelect').value === targetItem;
@@ -853,7 +675,8 @@
         renderTable(status);
         document.getElementById('syncTag').innerText = "";
         toggleLoadingState(false);
-      }).catch(err => {
+      })
+      .catch(err => {
         if (requestSerial !== bookingRequestSerial) return;
         document.getElementById('syncTag').innerText = "(同步失敗)";
         toggleLoadingState(false);
@@ -905,6 +728,7 @@
         else if (isB) {
           const currentEmail = String(staticData.userInfo.email || '').trim().toLowerCase();
           const bookedEmail = String(isB.email || '').trim().toLowerCase();
+          // 新資料用 Email 判斷本人，舊資料沒有 Email 時才退回姓名判斷。
           const isMe = bookedEmail ? bookedEmail === currentEmail : isB.user === staticData.userInfo.name;
           h += `<td><span class="${isMe?'cell-mine':'cell-booked'}">${isMe?'本人預約':isB.user}</span></td>`;
         } 
@@ -928,21 +752,29 @@
     document.getElementById('classDiv').style.display = isOther ? 'none' : 'block';
     document.getElementById('otherDiv').style.display = isOther ? 'block' : 'none';
   }
-  
+
   function submitBooking() {
     const pVal = document.getElementById('purposeType').value === 'class' ? document.getElementById('classSelect').value : document.getElementById('otherPurpose').value;
     const btn = document.querySelector('#modal button');
     btn.innerText = "⏳ 處理中..."; btn.disabled = true;
 
-    // 替換原本的 google.script.run.submitBooking(...)
-    MockAPI.submitBooking({ date: currentSel.d, period: currentSel.p, item: currentSel.item, user: staticData.userInfo.name, email: staticData.userInfo.email, purpose: pVal })
-      .then((res) => {
+    AppAPI.call('submitBooking', { 
+        date: currentSel.d, 
+        period: currentSel.p, 
+        item: currentSel.item, 
+        user: staticData.userInfo.name, 
+        email: staticData.userInfo.email, 
+        purpose: pVal 
+    }).then((res) => {
         btn.innerText = "送出預約"; btn.disabled = false; closeModal();
         if (res && res.success) {
            showSystemAlert("✅ 預約成功！"); refreshBooking(); 
         } else { 
            showSystemAlert(res ? res.msg : "發生錯誤"); refreshBooking(); 
         }
+      }).catch(err => {
+        btn.innerText = "送出預約"; btn.disabled = false; closeModal();
+        showSystemAlert("連線錯誤，預約失敗");
       });
   }
 
@@ -952,11 +784,10 @@
     upBox.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
     document.getElementById('list-past').innerHTML = '';
     
-    // 替換原本的 google.script.run.getMyRecords(...)
-    MockAPI.getMyRecords(staticData.userInfo.email).then(records => {
+    AppAPI.call('getMyRecords', { email: staticData.userInfo.email }).then(records => {
       allMyRecords = records;
       renderRecordLists();
-    });
+    }).catch(err => console.error("載入紀錄失敗", err));
   }
 
   function getPeriodEndTime(periodName) {
@@ -1032,10 +863,9 @@
   function cancelUserRecord(rowId, btnElement) {
     showSystemConfirm("⚠️ 確定要取消這筆預約嗎？取消後將釋出該時段給其他人借用。", () => {
       btnElement.innerText = "⏳ 取消中..."; btnElement.disabled = true;
-      // 替換原本的 google.script.run.cancelBooking(rowId)
-      MockAPI.cancelBooking(rowId).then(() => {
+      AppAPI.call('cancelBooking', { rowId: rowId }).then(() => {
         showSystemAlert("✅ 預約已成功取消！"); loadMyRecordsData(); 
-      });
+      }).catch(err => showSystemAlert("取消失敗"));
     });
   }
 
@@ -1059,10 +889,9 @@
     if (!isSilent) {
       box.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
     }
-    // 替換原本的 google.script.run.getAdminDailyRecords(...)
-    MockAPI.getAdminDailyRecords(document.getElementById('adminDate').value).then(records => {
+    AppAPI.call('getAdminDailyRecords', { date: document.getElementById('adminDate').value }).then(records => {
       if(records) renderAdminDailyRecords(records);
-    });
+    }).catch(err => console.error("載入管理員紀錄失敗", err));
   }
 
   function renderAdminDailyRecords(records) {
@@ -1120,8 +949,7 @@
     if(status==='未借出') btn.classList.add('active-unlent');
     if(status==='已借出') btn.classList.add('active-lent');
     if(status==='已歸還') btn.classList.add('active-returned');
-    // 替換原本的 google.script.run.updateKeyStatus(id, status)
-    MockAPI.updateKeyStatus(id, status);
+    AppAPI.call('updateKeyStatus', { id: id, status: status });
   }
 
   function submitRestrict() {
@@ -1142,14 +970,19 @@
     const btn = document.getElementById('resSubmitBtn');
     btn.innerText = "⏳ 寫入資料中，請稍候..."; btn.disabled = true;
     
-    // 替換原本的 google.script.run.batchRestrictAdvanced(...)
-    MockAPI.batchRestrictAdvanced(item, sDate, eDate, days, periods, note).then((msg) => {
-      showSystemAlert("✅ " + msg);
+    AppAPI.call('batchRestrictAdvanced', { 
+      item: item, sDateStr: sDate, eDateStr: eDate, daysOfWeek: days, periods: periods, note: note 
+    }).then((res) => {
+      if(res.success) {
+        showSystemAlert("✅ " + res.msg);
+        document.querySelectorAll('input[name="pCheck"]').forEach(cb => cb.checked = false);
+        document.getElementById('resNote').value = "";
+      } else {
+        showSystemAlert("⚠️ " + res.msg);
+      }
       btn.innerText = "確認並寫入設定"; btn.disabled = false;
-      document.querySelectorAll('input[name="pCheck"]').forEach(cb => cb.checked = false);
-      document.getElementById('resNote').value = "";
     }).catch(err => {
-      showSystemAlert(err.message);
+      showSystemAlert("系統錯誤");
       btn.innerText = "確認並寫入設定"; btn.disabled = false;
     });
   }
@@ -1180,8 +1013,7 @@
   function loadChart() {
     document.getElementById('leaderboardList').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
     
-    // 替換原本的 google.script.run.getStatisticsData()
-    MockAPI.getStatisticsData().then(function(data) {
+    AppAPI.call('getStatisticsData').then(function(data) {
       let sortedItems = data.items.sort((a, b) => b.count - a.count).slice(0, 10);
       let sortedUsers = data.users.sort((a, b) => b.count - a.count).slice(0, 10);
 
@@ -1192,7 +1024,7 @@
       currentChartData.user.values = sortedUsers.map(d => d.count);
 
       renderDashboard();
-    });
+    }).catch(err => console.error("獲取統計資料失敗", err));
   }
 
   function switchChartTab(mode) {

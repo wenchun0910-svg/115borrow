@@ -3,347 +3,441 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>教學設備與專科教室借用系統</title>
+  <title>Lab Equipment | 教學設備借用系統</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  
   <style>
     :root { 
-      --primary: #3498db; --bg: #f4f7f6; --success: #27ae60; --danger: #e74c3c; 
-      --past: #dcdde1; --gray: #95a5a6; --admin-purple: #8e44ad; --admin-bg: #f5eef8;     
+      --primary: #25334c; /* 圖片的深海軍藍 */
+      --primary-light: #374b6e;
+      --accent-yellow: #fde078; /* 表單的黃色 */
+      --accent-pink: #ffadad; /* 滑鼠的粉紅色 */
+      --accent-green: #90c290; /* 顯微鏡的綠色 */
+      --accent-blue: #7bb5e6; /* 平板的藍色 */
+      --bg: #25334c; 
+      --container-bg: #ffffff;
+      --text-dark: #25334c;
+      --success: #27ae60; 
+      --danger: #e74c3c; 
+      --past: #dcdde1; 
+      --gray: #95a5a6; 
+      --admin-purple: #5e6b91; 
+      --admin-bg: #f4f6f9;     
     }
-    body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; font-size: 11pt; color: #333; }
     
-    /* === 頂部導覽列 === */
-    .app-header { 
-      background: white; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); display: flex; 
-      justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; 
+    body { 
+      font-family: 'Nunito', 'Microsoft JhengHei', sans-serif; 
+      background-color: var(--bg); 
+      margin: 0; 
+      padding: 0; 
+      font-size: 11pt; 
+      color: #333; 
+      overflow-x: hidden;
     }
-    .app-title { font-size: 14pt; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; padding: 15px 0; }
-    
-    /* === 主選單 === */
-    .app-nav { display: flex; gap: 5px; flex-grow: 1; justify-content: center; overflow-x: auto; white-space: nowrap; }
-    .nav-item { padding: 18px 20px; cursor: pointer; font-weight: bold; color: #777; border-bottom: 3px solid transparent; transition: 0.2s; font-size: 11pt; }
-    .nav-item:hover { color: var(--primary); background: #f8f9fa; }
-    .nav-item.active { color: var(--primary); border-bottom-color: var(--primary); }
-    .nav-item.admin-nav { color: var(--admin-purple); display: none; }
-    .nav-item.admin-nav.active { border-bottom-color: var(--admin-purple); }
 
-    .header-user { font-size: 10pt; color: #666; background: #f1f2f6; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px; margin: 10px 0; }
-    .btn-logout { background: transparent; border: none; color: var(--danger); font-weight: bold; cursor: pointer; padding: 0; font-size: 10pt; }
+    h1, h2, h3, .app-title {
+      font-family: 'Fredoka', 'Microsoft JhengHei', sans-serif;
+      color: var(--text-dark);
+    }
+
+    /* === 浮動背景插圖 (裝飾用) === */
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    .bg-illustration {
+      position: fixed;
+      font-size: 3rem;
+      opacity: 0.8;
+      z-index: 0;
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .ill-1 { top: 5%; left: 5%; animation-delay: 0s; font-size: 4rem; }
+    .ill-2 { top: 15%; right: 10%; animation-delay: 1s; font-size: 3.5rem; }
+    .ill-3 { bottom: 10%; left: 8%; animation-delay: 2s; font-size: 3.5rem; }
+    .ill-4 { bottom: 15%; right: 5%; animation-delay: 3s; font-size: 4rem; }
+
+    .app-wrapper {
+      position: relative;
+      max-width: 1000px;
+      margin: 40px auto;
+      z-index: 10;
+      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3));
+    }
+
+    .wavy-top {
+      width: 100%;
+      height: 40px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="%23ffffff" d="M0,50 C150,100 300,0 450,50 C600,100 750,0 900,50 C1050,100 1200,0 1350,50 L1440,75 L1440,100 L0,100 Z"></path></svg>') no-repeat bottom;
+      background-size: 100% 40px;
+    }
+
+    .wavy-bottom {
+      width: 100%;
+      height: 40px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="%23ffffff" d="M0,50 C150,0 300,100 450,50 C600,0 750,100 900,50 C1050,0 1200,100 1350,50 L1440,25 L1440,0 L0,0 Z"></path></svg>') no-repeat top;
+      background-size: 100% 40px;
+    }
+
+    .main-content {
+      background-color: var(--container-bg);
+      padding: 10px 40px 40px 40px;
+    }
 
     @media (max-width: 768px) {
-      .app-header { padding: 0 10px; justify-content: space-between; }
-      .app-nav { order: 3; width: 100%; justify-content: flex-start; border-top: 1px solid #eee; }
-      .nav-item { padding: 12px 15px; font-size: 10pt; }
-      .app-title { padding: 10px 0; font-size: 12pt; }
-      .header-user { margin: 8px 0; }
+      .app-wrapper { margin: 10px auto; }
+      .main-content { padding: 10px 20px 30px 20px; }
+      .bg-illustration { display: none; /* 手機版隱藏背景圖案 */ }
     }
 
-    /* === 頁面視圖 === */
-    .container { padding: 20px; max-width: 950px; margin: auto; }
-    .view-section { display: none; animation: fadeIn 0.3s ease; }
+    /* === 頂部標題與導覽列 === */
+    .app-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      flex-wrap: wrap; 
+      margin-bottom: 25px;
+      border-bottom: 3px dashed #eee;
+      padding-bottom: 15px;
+    }
+    .app-title { font-size: 2.2rem; margin: 0; color: var(--primary); letter-spacing: 1px; }
+    .app-title span { color: var(--accent-blue); font-size: 1.2rem; vertical-align: middle; margin-left: 10px; font-family: 'Nunito', sans-serif; font-weight: 700; }
+    
+    .app-nav { display: flex; gap: 10px; flex-grow: 1; justify-content: center; overflow-x: auto; white-space: nowrap; margin-top: 10px;}
+    .nav-item { padding: 12px 24px; cursor: pointer; font-weight: 700; color: #777; background: #f0f3f5; border-radius: 30px; transition: 0.3s; font-size: 11pt; border: 2px solid transparent;}
+    .nav-item:hover { background: #e2e8f0; transform: translateY(-2px); }
+    .nav-item.active { background: var(--accent-yellow); color: var(--text-dark); border-color: #f3c22b; box-shadow: 0 4px 10px rgba(253, 224, 120, 0.4); }
+    .nav-item.admin-nav { background: #f0f0f5; color: var(--admin-purple); display: none; }
+    .nav-item.admin-nav.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(37, 51, 76, 0.3); }
+
+    .header-user { font-size: 11pt; color: #fff; background: var(--primary-light); padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 10px; font-weight: 700;}
+    .btn-logout { background: var(--accent-pink); border: 1px solid #ff8888; color: #a12b2b; font-weight: bold; cursor: pointer; padding: 4px 10px; border-radius: 15px; font-size: 10pt; transition: 0.2s;}
+    .btn-logout:hover { background: #ff9999; }
+
+    .view-section { display: none; animation: fadeIn 0.4s ease; }
     .view-section.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* === 我要預約 === */
-    .booking-controls { display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#f0f7ff; padding:15px; border-radius:10px; margin-bottom:15px; }
-    .locked-input { opacity: 0.6; cursor: not-allowed !important; background-color: #f1f2f6 !important; }
-    .proxy-alert { display:none; background:#fff3cd; color:#856404; padding:12px 15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border:1px solid #ffeeba; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .booking-controls { display:grid; grid-template-columns: 1fr 1fr; gap:15px; background:var(--accent-blue); padding:20px; border-radius:15px; margin-bottom:20px; box-shadow: 0 5px 15px rgba(123, 181, 230, 0.2); }
+    .booking-controls label { font-weight: 700; color: #fff; font-size: 11pt; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .booking-controls input, .booking-controls select { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #fff; margin-top: 8px; box-sizing: border-box; font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 11pt; color: var(--primary); }
     
-    .daily-board { background: #fff8e1; border-left: 5px solid #f39c12; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-    .daily-board h3 { margin: 0 0 10px 0; color: #d35400; font-size: 11pt; }
+    .locked-input { opacity: 0.7; cursor: not-allowed !important; background-color: #eef2f5 !important; }
+    .proxy-alert { display:none; background: var(--accent-yellow); color:#856404; padding:15px; border-radius:12px; margin-bottom:20px; font-weight:bold; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    
+    .daily-board { background: #fffdf5; border: 2px dashed #f3c22b; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+    .daily-board h3 { margin: 0 0 15px 0; color: #d35400; font-size: 13pt; }
     .daily-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .daily-tag { background: white; border: 1px solid #fdebd0; color: #d68910; padding: 6px 10px; border-radius: 6px; font-size: 10pt; font-weight: bold; }
+    .daily-tag { background: white; border: 2px solid var(--accent-yellow); color: #d35400; padding: 6px 12px; border-radius: 20px; font-size: 10pt; font-weight: bold; }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; table-layout: fixed; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    th, td { padding: 12px 8px; border: 1px solid #eee; text-align: center; }
-    th { background: #f8f9fa; color: #555; line-height: 1.4; } 
-    .skeleton { background: #eee; background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shine linear infinite; border-radius:4px; height: 30px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; table-layout: fixed; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 2px solid #edf2f7; }
+    th, td { padding: 15px 8px; text-align: center; border-bottom: 1px solid #edf2f7; border-right: 1px solid #edf2f7; }
+    th { background: #f8fafc; color: var(--primary); line-height: 1.4; font-weight: 700; font-family: 'Fredoka', sans-serif; font-size: 12pt; border-bottom: 2px solid #e2e8f0; } 
+    th:last-child, td:last-child { border-right: none; }
+    tr:last-child td { border-bottom: none; }
+
+    .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shine linear infinite; border-radius:8px; height: 35px; }
     @keyframes shine { to { background-position-x: -200%; } }
     
-    .btn-book { background: white; color: var(--success); border: 2px solid var(--success); padding: 6px; border-radius: 6px; cursor: pointer; width: 90%; font-weight: bold; }
-    .cell-mine { color: var(--primary); font-weight: bold; background: #f0f7ff; padding: 4px; border: 1px solid var(--primary); width: 90%; display:inline-block; border-radius: 4px; }
-    .cell-booked { color: var(--danger); font-weight: bold; background: #fff5f5; padding: 4px; width: 90%; display:inline-block; border-radius: 4px; }
-    .cell-past { background: var(--past); color: #888; font-size: 10pt; border-radius: 4px; padding: 4px; display: inline-block; width: 90%; }
-    .cell-restricted { color: #aaa; font-size: 9pt; background: #fafafa; }
+    .btn-book { background: var(--accent-green); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; width: 90%; font-weight: bold; box-shadow: 0 4px 6px rgba(144, 194, 144, 0.3); transition: 0.2s; font-family: 'Nunito', sans-serif;}
+    .btn-book:hover { transform: translateY(-2px); box-shadow: 0 6px 8px rgba(144, 194, 144, 0.4); }
+    .cell-mine { color: var(--text-dark); font-weight: bold; background: var(--accent-yellow); padding: 6px; border: 2px solid #f3c22b; width: 90%; display:inline-block; border-radius: 8px; }
+    .cell-booked { color: #fff; font-weight: bold; background: var(--accent-pink); padding: 6px; width: 90%; display:inline-block; border-radius: 8px; border: 2px solid #ff8888; }
+    .cell-past { background: var(--past); color: #777; font-size: 10pt; border-radius: 8px; padding: 6px; display: inline-block; width: 90%; font-weight: 600;}
+    .cell-restricted { color: #888; font-size: 10pt; background: #f1f5f9; font-weight: 600; border-radius: 8px; padding: 6px; }
 
-    /* === 代客預約面板 === */
-    .admin-panel { background: var(--admin-bg); padding: 18px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ebdcf0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-    .admin-panel h3 { margin: 0 0 10px 0; color: #333; font-size: 12pt; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+    .admin-panel { background: var(--admin-bg); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px dashed #cbd5e1; }
+    .admin-panel h3 { margin: 0 0 15px 0; color: var(--admin-purple); font-size: 14pt; display: flex; align-items: center; gap: 8px; }
     .admin-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .admin-input { flex-grow: 1; padding: 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 11pt; background: white; cursor: pointer; min-width: 200px; }
-    .btn-admin-active { background: var(--admin-purple); color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11pt; }
-    .btn-admin-inactive { background: white; color: #555; border: 1px solid #ccc; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11pt; }
+    .admin-input { flex-grow: 1; padding: 12px; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 11pt; background: white; cursor: pointer; min-width: 200px; font-family: 'Nunito', sans-serif; font-weight: 600; }
+    .btn-admin-active { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11pt; transition: 0.2s;}
+    .btn-admin-active:hover { background: var(--primary-light); }
+    .btn-admin-inactive { background: white; color: var(--primary); border: 2px solid var(--primary); padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11pt; }
 
     /* === 我的紀錄 === */
-    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .tab { padding: 10px 20px; cursor: pointer; border-radius: 8px; font-weight: bold; color: #777; background: #e9ecef; transition: 0.2s; }
-    .tab.active { background: var(--primary); color: white; }
-    .card { border-left: 5px solid var(--primary); background: #fff; padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; }
-    .card.past { border-left-color: var(--gray); background: #fafafa; opacity: 0.85; }
-    .card.cancelled { border-left-color: var(--danger); background: #fff5f5; opacity: 0.7; }
+    .tabs { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; }
+    .tab { padding: 10px 25px; cursor: pointer; border-radius: 30px; font-weight: 700; color: #94a3b8; background: #f8fafc; border: 2px solid #e2e8f0; transition: 0.3s; }
+    .tab.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(37, 51, 76, 0.2); }
+    
+    .card { border-left: 8px solid var(--accent-blue); background: #fff; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    .card.past { border-left-color: var(--gray); background: #f8fafc; opacity: 0.85; box-shadow: none; }
+    .card.cancelled { border-left-color: var(--accent-pink); background: #fff5f5; opacity: 0.8; box-shadow: none; }
     .card .info { flex-grow: 1; }
-    .card .title { font-weight: bold; font-size: 12pt; margin-bottom: 8px; color: #333; }
-    .card .detail { color: #555; font-size: 10pt; line-height: 1.6; }
-    .card .detail span { font-weight: bold; color: var(--primary); }
-    .btn-cancel { background: white; color: var(--danger); border: 2px solid var(--danger); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 10pt; transition: 0.2s; }
+    .card .title { font-family: 'Fredoka', sans-serif; font-size: 14pt; margin-bottom: 8px; color: var(--primary); }
+    .card .detail { color: #64748b; font-size: 11pt; line-height: 1.6; font-weight: 600; }
+    .card .detail span { font-weight: 700; color: var(--primary-light); background: #f1f5f9; padding: 2px 8px; border-radius: 6px; }
+    
+    .btn-cancel { background: white; color: var(--danger); border: 2px solid var(--danger); padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 10pt; transition: 0.2s; }
     .btn-cancel:hover { background: var(--danger); color: white; }
-    .status-badge { padding: 6px 12px; border-radius: 6px; font-size: 10pt; font-weight: bold; display: inline-block; }
+    .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 10pt; font-weight: bold; display: inline-block; }
     .status-cancelled { background: #ffebee; color: var(--danger); border: 1px solid #ffcdd2; }
-    .status-past { color: var(--gray); font-style: italic; font-size: 10pt; }
-    .group-title { font-size: 12pt; font-weight: bold; margin: 20px 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+    .status-past { color: var(--gray); font-style: italic; font-size: 11pt; font-weight: 600; }
 
     /* === 管理後台 === */
-    .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px; overflow-x: auto; white-space: nowrap; }
-    .admin-tab { padding: 10px 20px; cursor: pointer; border-radius: 8px; font-weight: bold; background: #f8f9fa; color: #777; transition: 0.2s; }
-    .admin-tab.active { background: var(--admin-purple); color: white; }
-    .admin-card { border-left: 5px solid var(--admin-purple); background: #fff; padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: block; }
-    .key-group { display: flex; gap: 5px; margin-top: 10px; }
-    .key-btn { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; font-size: 10pt; font-weight: bold; background: white; color: #666; transition: 0.2s; }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; overflow-x: auto; white-space: nowrap; }
+    .admin-tab { padding: 10px 20px; cursor: pointer; border-radius: 30px; font-weight: 700; background: #f8fafc; border: 2px solid #e2e8f0; color: #94a3b8; transition: 0.3s; }
+    .admin-tab.active { background: var(--admin-purple); color: white; border-color: var(--admin-purple); box-shadow: 0 4px 10px rgba(94, 107, 145, 0.3); }
+    
+    .admin-card { border-left: 6px solid var(--admin-purple); background: #fff; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: block; border: 1px solid #f1f5f9;}
+    .key-group { display: flex; gap: 8px; margin-top: 15px; }
+    .key-btn { flex: 1; padding: 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 10pt; font-weight: bold; background: white; color: #64748b; transition: 0.2s; }
     .key-btn.active-unlent { background: var(--gray); color: white; border-color: var(--gray); }
     .key-btn.active-lent { background: var(--danger); color: white; border-color: var(--danger); }
     .key-btn.active-returned { background: var(--success); color: white; border-color: var(--success); }
-    .form-row { margin-bottom: 18px; }
-    .form-row label.title { display: block; font-weight: bold; margin-bottom: 8px; color: #444; font-size: 11pt; }
-    .form-row input[type="date"], .form-row input[type="text"], .form-row select { width: 100%; padding: 10px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 11pt; }
-    .date-group { display: flex; gap: 10px; align-items: center; }
-    .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-    .check-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
-    .btn-submit { width: 100%; padding: 14px; background: var(--admin-purple); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 12pt; cursor: pointer; transition: 0.2s; }
-    .btn-submit:hover { background: #732d91; }
-    .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+    
+    .form-row { margin-bottom: 20px; }
+    .form-row label.title { display: block; font-weight: 700; margin-bottom: 8px; color: var(--primary); font-size: 11pt; }
+    .form-row input[type="date"], .form-row input[type="text"], .form-row select { width: 100%; padding: 12px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 11pt; font-family: 'Nunito', sans-serif; font-weight: 600;}
+    .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 2px dashed #cbd5e1; }
+    .check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; color: var(--primary);}
+    .btn-submit { width: 100%; padding: 15px; background: var(--admin-purple); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 13pt; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(94, 107, 145, 0.3);}
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(94, 107, 145, 0.4); }
 
-    /* === 遊戲化排行榜樣式 === */
+    /* === 排行榜與圖表 === */
     .chart-header { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-    .chart-tab { padding: 8px 20px; cursor: pointer; border-radius: 20px; font-weight: bold; color: #777; background: #e9ecef; transition: 0.3s; font-size: 11pt; }
-    .chart-tab.active { background: var(--admin-purple); color: white; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3); }
-    
-    .dashboard-grid { display: flex; flex-wrap: wrap; gap: 20px; }
-    .dashboard-panel { flex: 1; min-width: 300px; background: #fbfbfc; padding: 15px; border-radius: 10px; border: 1px solid #eee; }
-    
-    .leaderboard-list { list-style: none; padding: 0; margin: 0; }
-    .leaderboard-item { display: flex; align-items: center; padding: 12px; margin-bottom: 8px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); border-left: 5px solid #ddd; transition: transform 0.2s; }
+    .chart-tab { padding: 10px 25px; cursor: pointer; border-radius: 30px; font-weight: bold; color: #94a3b8; background: #f8fafc; border: 2px solid #e2e8f0; transition: 0.3s; font-size: 11pt; }
+    .chart-tab.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(37, 51, 76, 0.3); }
+    .dashboard-panel { flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; }
+    .leaderboard-item { display: flex; align-items: center; padding: 15px; margin-bottom: 10px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border-left: 6px solid #cbd5e1; transition: transform 0.2s; }
     .leaderboard-item:hover { transform: scale(1.02); }
-    
-    /* 冠亞季軍專屬樣式 */
-    .leaderboard-item.rank-1 { border-left-color: #ffd700; background: #fffde7; }
-    .leaderboard-item.rank-2 { border-left-color: #c0c0c0; background: #f8f9fa; }
-    .leaderboard-item.rank-3 { border-left-color: #cd7f32; background: #fff3e0; }
-    
-    .rank-badge { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px; font-size: 11pt; background: #eee; color: #666; }
-    .rank-1 .rank-badge { background: #ffd700; color: #b8860b; font-size: 13pt; }
-    .rank-2 .rank-badge { background: #c0c0c0; color: #666; font-size: 12pt; }
-    .rank-3 .rank-badge { background: #cd7f32; color: #8b4513; font-size: 12pt; }
-    
-    .item-name { flex-grow: 1; font-weight: bold; font-size: 11pt; color: #333; }
-    .item-count { font-size: 13pt; font-weight: bold; color: var(--admin-purple); }
+    .leaderboard-item.rank-1 { border-left-color: var(--accent-yellow); background: #fffdf5; }
+    .leaderboard-item.rank-2 { border-left-color: #cbd5e1; background: #f8fafc; }
+    .leaderboard-item.rank-3 { border-left-color: #f3c22b; background: #fffcf0; }
+    .rank-badge { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-right: 15px; font-size: 11pt; background: #f1f5f9; color: #64748b; }
+    .rank-1 .rank-badge { background: var(--accent-yellow); color: #b8860b; font-size: 14pt; box-shadow: 0 2px 5px rgba(253, 224, 120, 0.5);}
+    .item-name { flex-grow: 1; font-weight: bold; font-size: 12pt; color: var(--primary); }
 
-    /* === 系統彈出視窗與登入 === */
     #loginOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--primary); z-index:9998; align-items:center; justify-content:center; }
-    .login-box { background: white; padding: 30px; border-radius: 12px; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; }
-    .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 20px; }
-    .login-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 11pt; }
-    .btn-login { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 12pt; cursor: pointer; transition: 0.2s; }
     
-    /* 修正圖層高度 z-index，確保不會被登入視窗遮擋 */
-    #overlay, #alertOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; }
-    #modal, #alertModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:25px; border-radius:12px; z-index:10001; width:300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+    /* 登入區塊周圍的裝飾波浪 */
+    .login-wrapper { position: relative; width: 350px; max-width: 90%; }
+    .login-box { background: var(--container-bg); padding: 40px 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: center; position: relative; z-index: 10; }
+    .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 25px; font-size: 2rem; }
+    .login-box h2 span { color: var(--accent-blue); }
+    .login-input { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; font-size: 11pt; font-family: 'Nunito', sans-serif; font-weight: 600; color: var(--primary);}
+    .login-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(123, 181, 230, 0.2); }
+    .btn-login { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 13pt; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-family: 'Fredoka', sans-serif; letter-spacing: 1px;}
+    .btn-login:hover { background: var(--primary-light); transform: translateY(-2px); }
     
-    .modal-input { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 11pt; text-align: left; }
-    .btn-alert { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; }
-    .confirm-btns { display: flex; gap: 10px; margin-top: 15px; }
-    .btn-cancel-modal { background: #f1f2f6; color: #555; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; }
-    .btn-confirm-modal { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; }
+    #overlay, #alertOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(37, 51, 76, 0.8); z-index:10000; backdrop-filter: blur(3px); }
+    #modal, #alertModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:20px; z-index:10001; width:320px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; border-top: 8px solid var(--accent-yellow);}
+    
+    #modal h3 { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; margin-top: 0;}
+    .modal-input { width: 100%; box-sizing: border-box; padding: 12px; margin-top: 8px; margin-bottom: 20px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 11pt; font-family: 'Nunito', sans-serif; font-weight: 600; color: var(--primary); }
+    .btn-alert { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; font-size: 12pt; box-shadow: 0 4px 10px rgba(37, 51, 76, 0.3);}
+    .confirm-btns { display: flex; gap: 15px; margin-top: 20px; }
+    .btn-cancel-modal { background: #f1f5f9; color: #64748b; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; transition: 0.2s; font-size: 11pt;}
+    .btn-cancel-modal:hover { background: #e2e8f0; }
+    .btn-confirm-modal { background: var(--danger); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; transition: 0.2s; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); font-size: 11pt;}
+    .btn-confirm-modal:hover { background: #c0392b; }
   </style>
 </head>
 <body>
 
-<div id="loginOverlay">
-  <div class="login-box">
-    <h2>🔐 系統登入</h2>
-    <select id="loginNameSelect" class="login-input" style="margin-bottom: 15px;"><option value="">載入名單中...</option></select>
-    
-    <input type="text" id="loginPinInput" class="login-input" placeholder="請輸入帳號" style="margin-bottom: 8px;">
-    <div style="font-size: 10pt; color: #555; text-align: left; margin-bottom: 18px; line-height: 1.4; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px dashed #ccc;">
-      💡 請輸入你的 <b>mail.chanes.tc.edu.tw</b> 帳號<br>
-      <span style="font-size: 9pt; color: #888;">(只需輸入 @ 前的帳號即可)</span>
-    </div>
+<!-- 背景裝飾插圖 (全域) -->
+<div class="bg-illustration ill-1">🔬</div>
+<div class="bg-illustration ill-2">💻</div>
+<div class="bg-illustration ill-3">📱</div>
+<div class="bg-illustration ill-4">🖱️</div>
 
-    <button id="btnLoginSubmit" class="btn-login" onclick="doLogin()">確認登入</button>
+<div id="loginOverlay">
+  <!-- 登入畫面的浮動插圖 -->
+  <div class="bg-illustration ill-1" style="z-index:9999;">🔬</div>
+  <div class="bg-illustration ill-2" style="z-index:9999;">💻</div>
+  <div class="bg-illustration ill-3" style="z-index:9999;">📋</div>
+  <div class="bg-illustration ill-4" style="z-index:9999;">🖱️</div>
+
+  <div class="login-wrapper">
+    <div class="login-box">
+      <h2>Lab <span>Equipment</span></h2>
+      <select id="loginNameSelect" class="login-input" style="margin-bottom: 20px;"><option value="">載入名單中...</option></select>
+      
+      <input type="text" id="loginPinInput" class="login-input" placeholder="請輸入帳號" style="margin-bottom: 10px;">
+      <div style="font-size: 10pt; color: #64748b; text-align: left; margin-bottom: 25px; line-height: 1.5; background: #f8fafc; padding: 12px; border-radius: 10px; border: 2px dashed #cbd5e1; font-weight: 600;">
+        💡 請輸入你的 <b>mail.chanes.tc.edu.tw</b> 帳號<br>
+        <span style="font-size: 9pt; color: #94a3b8;">(只需輸入 @ 前的帳號即可)</span>
+      </div>
+
+      <button id="btnLoginSubmit" class="btn-login" onclick="doLogin()">Login 登入</button>
+    </div>
   </div>
 </div>
 
 <div id="mainApp" style="display:none;">
-  <div class="app-header">
-    <div class="app-title">📅 設備預約系統</div>
-    <div class="app-nav">
-      <div class="nav-item active" onclick="switchAppView('booking')" id="nav-booking">📝 我要預約</div>
-      <div class="nav-item" onclick="switchAppView('myrecords')" id="nav-myrecords">👤 我的紀錄</div>
-      <div class="nav-item admin-nav" onclick="switchAppView('admin')" id="nav-admin">⚙️ 管理後台</div>
-    </div>
-    <div class="header-user">
-      <span id="displayUserName">使用者</span>
-      <button class="btn-logout" onclick="doLogout(false)">登出</button>
-    </div>
-  </div>
+  
+  <div class="app-wrapper">
+    <!-- 頂部波浪效果 -->
+    <div class="wavy-top"></div>
+    
+    <div class="main-content">
+      <div class="app-header">
+        <h1 class="app-title">Lab Equipment <span>設備預約系統</span></h1>
+        
+        <div class="header-user">
+          <span style="font-size: 1.2rem;">👨‍🏫</span> <span id="displayUserName">使用者</span>
+          <button class="btn-logout" onclick="doLogout(false)">登出</button>
+        </div>
 
-  <div class="container" style="padding-bottom: 0;">
-    <div id="proxyAlert" class="proxy-alert">
-      <span style="font-size: 14pt;">🔄</span>
-      <span><b>代理模式：</b>您正以「<span id="proxyCurrentName" style="color:#d35400; text-decoration:underline;"></span>」身分操作系統。</span>
-    </div>
-  </div>
-
-  <div class="container">
-    <div id="view-booking" class="view-section active">
-      <div id="adminPanel" class="admin-panel" style="display:none;">
-        <h3>👨‍💻 代客預約 / 身分切換</h3>
-        <div class="admin-controls">
-          <select id="adminSwitchName" class="admin-input"></select>
-          <button id="btnSwitch" class="btn-admin-active" onclick="switchUserProxy()">切換身分</button>
-          <button id="btnReset" class="btn-admin-inactive" onclick="resetUserProxy()">還原本人</button>
+        <div class="app-nav" style="width: 100%;">
+          <div class="nav-item active" onclick="switchAppView('booking')" id="nav-booking">📝 我要預約</div>
+          <div class="nav-item" onclick="switchAppView('myrecords')" id="nav-myrecords">👤 我的紀錄</div>
+          <div class="nav-item admin-nav" onclick="switchAppView('admin')" id="nav-admin">⚙️ 管理後台</div>
         </div>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h2 style="color: var(--primary); margin:0;">選擇借用時段 <span id="syncTag" style="font-size:10pt; color:#666; font-weight:normal;"></span></h2>
+      <!-- 代理模式提示 -->
+      <div id="proxyAlert" class="proxy-alert">
+        <span style="font-size: 1.5rem;">🔄</span>
+        <span><b>代理模式：</b>您正以「<span id="proxyCurrentName" style="color:#d35400; text-decoration:underline;"></span>」身分操作系統。</span>
       </div>
 
-      <div id="dailyBoard" class="daily-board" style="display:none;"></div>
-
-      <div class="booking-controls">
-        <div>
-          <label style="font-weight:bold; color:#555; font-size:10pt;">借用日期</label>
-          <input type="date" id="targetDate" onchange="refreshBooking()" style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc; margin-top:5px; box-sizing:border-box;">
-        </div>
-        <div>
-          <label style="font-weight:bold; color:#555; font-size:10pt;">選擇設備/教室</label>
-          <select id="itemSelect" onchange="refreshBooking()" style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc; margin-top:5px; box-sizing:border-box;"></select>
-        </div>
-      </div>
-      <div id="tableBox" style="overflow-x:auto;"></div>
-    </div>
-
-    <div id="view-myrecords" class="view-section">
-      <h2 style="color: var(--primary); margin-top: 0; margin-bottom: 20px;">預約清單</h2>
-      <div class="tabs">
-        <div id="tab-upcoming" class="tab active" onclick="switchSubTab('upcoming')">即將到來</div>
-        <div id="tab-past" class="tab" onclick="switchSubTab('past')">歷史紀錄</div>
-      </div>
-      <div id="list-upcoming"></div>
-      <div id="list-past" style="display: none;"></div>
-    </div>
-
-    <div id="view-admin" class="view-section">
-      <h2 style="color:var(--admin-purple); margin-top:0;">👨‍💻 管理員看板</h2>
-      <div class="admin-tabs">
-        <div id="admin-t1" class="admin-tab active" onclick="switchAdminTab(1)">每日借用動態</div>
-        <div id="admin-t2" class="admin-tab" onclick="switchAdminTab(2)">⚙️ 批次禁借設定</div>
-        <div id="admin-t3" class="admin-tab" onclick="switchAdminTab(3)">📊 統計圖表</div>
-      </div>
-
-      <div id="admin-page1">
-        <div class="form-row" style="background:#f3e5f5; padding:15px; border-radius:8px;">
-          <label class="title" style="margin:0 0 5px 0;">📅 查看日期</label>
-          <input type="date" id="adminDate" onchange="loadAdminDaily()" style="max-width: 250px;">
-        </div>
-        <div id="adminDailyList"></div>
-      </div>
-
-      <div id="admin-page2" style="display:none;">
-        <div class="form-row">
-          <label class="title">🚫 選擇禁借設備/教室</label>
-          <select id="resItem"></select>
-        </div>
-        <div class="form-row">
-          <label class="title">📅 影響日期範圍</label>
-          <div class="date-group">
-            <input type="date" id="resStartDate"> <span style="font-weight:bold; color:#777;">至</span> <input type="date" id="resEndDate">
+      <div id="view-booking" class="view-section active">
+        <div id="adminPanel" class="admin-panel" style="display:none;">
+          <h3>👨‍💻 代客預約 / 身分切換</h3>
+          <div class="admin-controls">
+            <select id="adminSwitchName" class="admin-input"></select>
+            <button id="btnSwitch" class="btn-admin-active" onclick="switchUserProxy()">切換身分</button>
+            <button id="btnReset" class="btn-admin-inactive" onclick="resetUserProxy()">還原本人</button>
           </div>
         </div>
-        <div class="form-row">
-          <label class="title">📌 適用星期 (可複選)</label>
-          <div class="check-grid" id="dayChecks">
-            <label class="check-item"><input type="checkbox" name="dCheck" value="1" checked> 週一</label>
-            <label class="check-item"><input type="checkbox" name="dCheck" value="2" checked> 週二</label>
-            <label class="check-item"><input type="checkbox" name="dCheck" value="3" checked> 週三</label>
-            <label class="check-item"><input type="checkbox" name="dCheck" value="4" checked> 週四</label>
-            <label class="check-item"><input type="checkbox" name="dCheck" value="5" checked> 週五</label>
-            <label class="check-item"><input type="checkbox" name="dCheck" value="6"> 週六</label>
-            <label class="check-item"><input type="checkbox" name="dCheck" value="0"> 週日</label>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h2 style="margin:0;">選擇借用時段 <span id="syncTag" style="font-size:11pt; color:var(--accent-blue); font-weight:bold; font-family:'Nunito', sans-serif;"></span></h2>
+        </div>
+
+        <div id="dailyBoard" class="daily-board" style="display:none;"></div>
+
+        <div class="booking-controls">
+          <div>
+            <label>📅 借用日期</label>
+            <input type="date" id="targetDate" onchange="refreshBooking()">
+          </div>
+          <div>
+            <label>🔬 選擇設備/教室</label>
+            <select id="itemSelect" onchange="refreshBooking()"></select>
           </div>
         </div>
-        <div class="form-row">
-          <label class="title">⏱️ 禁借節次 (可複選)</label>
-          <div id="periodChecks" class="check-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));"></div>
-        </div>
-        <div class="form-row">
-          <label class="title">📝 備註原因</label>
-          <input type="text" id="resNote" placeholder="例如：設備維修中、期末盤點、固定社團時間...">
-        </div>
-        <button id="resSubmitBtn" class="btn-submit" onclick="submitRestrict()">確認並寫入設定</button>
+        <div id="tableBox" style="overflow-x:auto;"></div>
       </div>
 
-      <div id="admin-page3" style="display:none;">
-        <div class="chart-container" style="margin-top: 10px; padding: 20px; background: #ffffff; border-radius: 8px; border: 1px solid #ebdcf0; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-          
+      <!-- 我的紀錄 -->
+      <div id="view-myrecords" class="view-section">
+        <h2 style="margin-top: 0; margin-bottom: 25px;">預約清單</h2>
+        <div class="tabs">
+          <div id="tab-upcoming" class="tab active" onclick="switchSubTab('upcoming')">即將到來</div>
+          <div id="tab-past" class="tab" onclick="switchSubTab('past')">歷史紀錄</div>
+        </div>
+        <div id="list-upcoming"></div>
+        <div id="list-past" style="display: none;"></div>
+      </div>
+
+      <!-- 管理後台 -->
+      <div id="view-admin" class="view-section">
+        <h2 style="color:var(--admin-purple); margin-top:0;">👨‍💻 管理員看板</h2>
+        <div class="admin-tabs">
+          <div id="admin-t1" class="admin-tab active" onclick="switchAdminTab(1)">每日借用動態</div>
+          <div id="admin-t2" class="admin-tab" onclick="switchAdminTab(2)">⚙️ 批次禁借設定</div>
+          <div id="admin-t3" class="admin-tab" onclick="switchAdminTab(3)">📊 統計圖表</div>
+        </div>
+
+        <div id="admin-page1">
+          <div class="form-row" style="background:#f1f5f9; padding:20px; border-radius:12px; border: 2px dashed #cbd5e1;">
+            <label class="title" style="margin:0 0 10px 0;">📅 查看日期</label>
+            <input type="date" id="adminDate" onchange="loadAdminDaily()" style="max-width: 250px;">
+          </div>
+          <div id="adminDailyList"></div>
+        </div>
+
+        <div id="admin-page2" style="display:none;">
+          <div class="form-row">
+            <label class="title">🚫 選擇禁借設備/教室</label>
+            <select id="resItem"></select>
+          </div>
+          <div class="form-row">
+            <label class="title">📅 影響日期範圍</label>
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <input type="date" id="resStartDate"> <span style="font-weight:bold; color:var(--primary);">至</span> <input type="date" id="resEndDate">
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="title">📌 適用星期 (可複選)</label>
+            <div class="check-grid" id="dayChecks">
+              <label class="check-item"><input type="checkbox" name="dCheck" value="1" checked> 週一</label>
+              <label class="check-item"><input type="checkbox" name="dCheck" value="2" checked> 週二</label>
+              <label class="check-item"><input type="checkbox" name="dCheck" value="3" checked> 週三</label>
+              <label class="check-item"><input type="checkbox" name="dCheck" value="4" checked> 週四</label>
+              <label class="check-item"><input type="checkbox" name="dCheck" value="5" checked> 週五</label>
+              <label class="check-item"><input type="checkbox" name="dCheck" value="6"> 週六</label>
+              <label class="check-item"><input type="checkbox" name="dCheck" value="0"> 週日</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="title">⏱️ 禁借節次 (可複選)</label>
+            <div id="periodChecks" class="check-grid" style="grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));"></div>
+          </div>
+          <div class="form-row">
+            <label class="title">📝 備註原因</label>
+            <input type="text" id="resNote" placeholder="例如：設備維修中、期末盤點、固定社團時間...">
+          </div>
+          <button id="resSubmitBtn" class="btn-submit" onclick="submitRestrict()">確認並寫入設定</button>
+        </div>
+
+        <div id="admin-page3" style="display:none;">
           <div class="chart-header">
             <div id="ctab-item" class="chart-tab active" onclick="switchChartTab('item')">🏆 設備人氣榜</div>
             <div id="ctab-user" class="chart-tab" onclick="switchChartTab('user')">👑 借用達人榜</div>
           </div>
-
           <div class="dashboard-grid">
             <div class="dashboard-panel">
-              <div style="position: relative; height: 350px; width: 100%;">
-                <canvas id="myChart"></canvas>
-              </div>
+              <div style="position: relative; height: 350px; width: 100%;"><canvas id="myChart"></canvas></div>
             </div>
-            
             <div class="dashboard-panel" style="max-height: 380px; overflow-y: auto;">
               <ul id="leaderboardList" class="leaderboard-list">
                 <div class="skeleton"></div><div class="skeleton"></div>
               </ul>
             </div>
           </div>
-
           <div style="text-align: center; margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-            <button onclick="downloadChart()" style="background-color: var(--admin-purple); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 11pt; font-weight: bold;">
-              🖼️ 匯出圖表 (PNG)
-            </button>
-            <button onclick="downloadCSV()" style="background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 11pt; font-weight: bold;">
-              📑 匯出排行榜 (CSV)
-            </button>
+            <button onclick="downloadChart()" style="background-color: var(--admin-purple); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-size: 11pt; font-weight: bold; box-shadow: 0 4px 10px rgba(94, 107, 145, 0.3);">🖼️ 匯出圖表</button>
+            <button onclick="downloadCSV()" style="background-color: var(--success); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-size: 11pt; font-weight: bold; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);">📑 匯出排行榜</button>
           </div>
         </div>
       </div>
-
     </div>
+    
+    <!-- 底部波浪效果 -->
+    <div class="wavy-bottom"></div>
   </div>
 </div>
 
 <div id="overlay" onclick="closeModal()"></div>
 <div id="modal" style="text-align: left;">
-  <h3 style="margin:0 0 10px 0; color:var(--primary);">確認預約</h3>
-  <div id="confirmDetail" style="font-size:10pt; background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:15px; line-height:1.5;"></div>
-  <label style="font-size: 11pt; font-weight:bold;">借用人</label>
-  <input type="text" id="userName" class="modal-input" readonly style="background:#f0f0f0; color:#333; font-weight:bold;">
-  <label style="font-size: 11pt; font-weight:bold;">用途</label>
+  <h3 style="color:var(--primary);">確認預約</h3>
+  <div id="confirmDetail" style="font-size:11pt; font-weight:600; background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:20px; line-height:1.6; border: 2px dashed #cbd5e1; color: var(--primary);"></div>
+  <label style="font-size: 11pt; font-weight:bold; color: var(--primary);">👤 借用人</label>
+  <input type="text" id="userName" class="modal-input" readonly style="background:#f1f5f9; color:#64748b; font-weight:bold; border-style: dashed;">
+  <label style="font-size: 11pt; font-weight:bold; color: var(--primary);">📝 用途</label>
   <select id="purposeType" class="modal-input" onchange="togglePurpose()">
     <option value="class">班級使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv"><select id="classSelect" class="modal-input"></select></div>
   <div id="otherDiv" style="display:none;"><input type="text" id="otherPurpose" class="modal-input" placeholder="請輸入用途"></div>
-  <button onclick="submitBooking()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:11pt;">送出預約</button>
+  <button onclick="submitBooking()" style="width:100%; padding:14px; background:var(--accent-blue); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:12pt; box-shadow: 0 4px 10px rgba(123, 181, 230, 0.4); font-family: 'Nunito', sans-serif;">送出預約</button>
 </div>
 
 <div id="alertOverlay"></div>
 <div id="alertModal">
-  <div id="alertMessage" style="font-size: 11pt; color: #333; line-height: 1.5; margin-bottom: 10px;"></div>
+  <div id="alertMessage" style="font-size: 12pt; font-weight: 600; color: var(--primary); line-height: 1.6; margin-bottom: 15px;"></div>
   <div id="alertBtns"></div>
 </div>
 
 <script>
-  // ================= 核心：API 呼叫封裝 =================
-  
   // ⚠️ 請確保此處為最新發佈（且權限為所有人）的 Google Apps Script 網址
   const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwXcZGRIR37RdKm1Ai4d8bnbNCfKB6amhCMdds9BvqGgbApYxEZeA7r0mKhnRkdCeJH/exec"; 
 
@@ -353,14 +447,12 @@
         alert("請先在原始碼中設定 GAS_API_URL！");
         return Promise.reject("API URL not set");
       }
-
       try {
         const response = await fetch(GAS_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: action, payload: payload })
         });
-        
         const data = await response.json();
         if (data.error) throw new Error(data.error);
         return data;
@@ -371,42 +463,27 @@
     }
   };
 
-
-  // ================= 全域變數與狀態 =================
   let staticData = { items: [], classes: [], periods: [], users: [], userInfo: null };
-  let originalAdminName = ""; 
-  let originalAdminEmail = "";
-  let spoofedUserName = ""; 
-  let currentSel = {}; 
-  let allMyRecords = []; 
+  let originalAdminName = ""; let originalAdminEmail = ""; let spoofedUserName = ""; 
+  let currentSel = {}; let allMyRecords = []; 
   const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
-  
-  let myChartInstance = null;
-  let bookingRequestSerial = 0;
-
-  let inactivityTimer;
-  let adminAutoRefreshTimer; 
+  let myChartInstance = null; let bookingRequestSerial = 0;
+  let inactivityTimer; let adminAutoRefreshTimer; 
   const INACTIVITY_TIME_MS = 5 * 60 * 1000; 
 
   function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
-    
     const isUserAdmin = staticData && staticData.userInfo && (staticData.userInfo.isAdmin === true || staticData.userInfo.isAdmin === 'true');
     if (isUserAdmin) return; 
-
     if (document.getElementById('mainApp').style.display === 'block') {
-      inactivityTimer = setTimeout(() => {
-        doLogout(true); 
-      }, INACTIVITY_TIME_MS);
+      inactivityTimer = setTimeout(() => { doLogout(true); }, INACTIVITY_TIME_MS);
     }
   }
 
   function setupAutoLogout() {
-    document.addEventListener('mousemove', resetInactivityTimer);
-    document.addEventListener('keypress', resetInactivityTimer);
-    document.addEventListener('click', resetInactivityTimer);
-    document.addEventListener('scroll', resetInactivityTimer);
-    document.addEventListener('touchstart', resetInactivityTimer);
+    ['mousemove','keypress','click','scroll','touchstart'].forEach(evt => 
+      document.addEventListener(evt, resetInactivityTimer)
+    );
   }
 
   function getLocalTodayString() {
@@ -415,36 +492,26 @@
     return (new Date(now - offset)).toISOString().split('T')[0];
   }
 
-  // ================= 初始化與登入系統 =================
   function renderLoginNameSelect(users) {
     const nameSel = document.getElementById('loginNameSelect');
     const currentVal = nameSel.value;
-    nameSel.innerHTML = '<option value="">-- 請選擇您的姓名 --</option>' + 
-                        users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+    nameSel.innerHTML = '<option value="">-- 請選擇您的姓名 --</option>' + users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
     if (currentVal) nameSel.value = currentVal;
   }
 
   window.onload = () => {
     const today = getLocalTodayString();
-    document.getElementById('targetDate').value = today;
-    document.getElementById('adminDate').value = today;
-    document.getElementById('resStartDate').value = today;
-    document.getElementById('resEndDate').value = today;
-
+    ['targetDate','adminDate','resStartDate','resEndDate'].forEach(id => document.getElementById(id).value = today);
     setupAutoLogout(); 
 
     const savedUser = localStorage.getItem('appAuthSession');
-    
     if (savedUser) {
       staticData.userInfo = JSON.parse(savedUser);
       initSPA();
     } else {
       document.getElementById('loginOverlay').style.display = 'flex';
-      
       const localUsers = localStorage.getItem('localUserList_v2');
-      if (localUsers) {
-         renderLoginNameSelect(JSON.parse(localUsers));
-      }
+      if (localUsers) renderLoginNameSelect(JSON.parse(localUsers));
       
       AppAPI.call('getLoginUserList').then(users => {
         if(users && users.length > 0) {
@@ -471,89 +538,61 @@
             const authData = { name: res.name, email: res.email, isAdmin: res.isAdmin };
             localStorage.setItem('appAuthSession', JSON.stringify(authData));
             staticData.userInfo = authData;
-            btn.innerText = "確認登入"; btn.disabled = false;
+            btn.innerText = "Login 登入"; btn.disabled = false;
             initSPA();
          } else {
             showSystemAlert("❌ " + res.msg);
-            btn.innerText = "確認登入"; btn.disabled = false;
+            btn.innerText = "Login 登入"; btn.disabled = false;
          }
       }).catch(err => {
          showSystemAlert("⚠️ 系統連線失敗！\n可能是尚未發佈新版本，或學校網域封鎖了權限。\n(錯誤: " + err.message + ")");
-         btn.innerText = "確認登入"; btn.disabled = false;
+         btn.innerText = "Login 登入"; btn.disabled = false;
       });
   }
 
   function doLogout(isAutoLogout = false) {
     localStorage.removeItem('appAuthSession');
-    clearTimeout(inactivityTimer); 
-    clearInterval(adminAutoRefreshTimer); 
-    
+    clearTimeout(inactivityTimer); clearInterval(adminAutoRefreshTimer); 
     document.getElementById('mainApp').style.display = 'none';
     document.getElementById('loginOverlay').style.display = 'flex';
     document.getElementById('loginPinInput').value = '';
-    
-    if (isAutoLogout) {
-      showSystemAlert("⏱️ 您已閒置超過 5 分鐘，為保護帳號安全，系統已自動為您登出。");
-    }
+    if (isAutoLogout) showSystemAlert("⏱️ 您已閒置超過 5 分鐘，為保護帳號安全，系統已自動為您登出。");
   }
 
   function initSPA() {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
-    resetInactivityTimer(); 
-
-    updateHeaderName();
+    resetInactivityTimer(); updateHeaderName();
     
     const isUserAdmin = staticData.userInfo.isAdmin === true || staticData.userInfo.isAdmin === 'true';
     if (isUserAdmin) {
       document.getElementById('nav-admin').style.display = 'inline-block';
       document.getElementById('adminPanel').style.display = 'block';
-      if (!originalAdminName) {
-        originalAdminName = staticData.userInfo.name;
-        originalAdminEmail = staticData.userInfo.email;
-      }
-      
+      if (!originalAdminName) { originalAdminName = staticData.userInfo.name; originalAdminEmail = staticData.userInfo.email; }
       clearInterval(adminAutoRefreshTimer);
       adminAutoRefreshTimer = setInterval(() => {
-        if (document.getElementById('view-admin').classList.contains('active') &&
-            document.getElementById('admin-page1').style.display !== 'none') {
+        if (document.getElementById('view-admin').classList.contains('active') && document.getElementById('admin-page1').style.display !== 'none') {
           loadAdminDaily(true); 
         }
       }, 5 * 60 * 1000);
-
     } else {
       document.getElementById('nav-admin').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'none';
     }
 
-    toggleLoadingState(true); 
-    renderSkeleton();
+    toggleLoadingState(true); renderSkeleton();
     
-    AppAPI.call('getAppStartupData', { 
-        email: staticData.userInfo.email, 
-        targetDate: document.getElementById('targetDate').value 
-    }).then(data => {
-      if (data) {
-        if(data.staticData) {
-          if(data.staticData.items) staticData.items = data.staticData.items;
-          if(data.staticData.classes) staticData.classes = data.staticData.classes;
-          if(data.staticData.periods) staticData.periods = data.staticData.periods;
-          if(data.staticData.users) staticData.users = data.staticData.users; 
-        }
+    AppAPI.call('getAppStartupData', { email: staticData.userInfo.email, targetDate: document.getElementById('targetDate').value }).then(data => {
+      if (data && data.staticData) {
+        ['items','classes','periods','users'].forEach(k => { if(data.staticData[k]) staticData[k] = data.staticData[k]; });
       }
       initDropdowns();
-      
       if(data && data.bookingStatus) {
-        renderDailyBoard(data.bookingStatus); 
-        renderTable(data.bookingStatus);
-        document.getElementById('syncTag').innerText = ""; 
-        toggleLoadingState(false);
-      } else {
-        refreshBooking(); 
-      }
+        renderDailyBoard(data.bookingStatus); renderTable(data.bookingStatus);
+        document.getElementById('syncTag').innerText = ""; toggleLoadingState(false);
+      } else { refreshBooking(); }
     }).catch(err => {
-       showSystemAlert("系統連線發生錯誤，無法載入初始資料。");
-       toggleLoadingState(false);
+       showSystemAlert("系統連線發生錯誤，無法載入初始資料。"); toggleLoadingState(false);
     });
   }
 
@@ -562,32 +601,21 @@
     document.getElementById('userName').value = staticData.userInfo.name;
   }
 
-  // ================= 導覽切換邏輯 =================
   function switchAppView(viewId) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById('nav-' + viewId).classList.add('active');
-    
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.getElementById('view-' + viewId).classList.add('active');
 
-    if (viewId === 'booking') {
-      refreshBooking();
-    } else if (viewId === 'myrecords') {
-      loadMyRecordsData();
-    } else if (viewId === 'admin') {
-      switchAdminTab(1);
-      loadAdminDaily();
-    }
+    if (viewId === 'booking') refreshBooking();
+    else if (viewId === 'myrecords') loadMyRecordsData();
+    else if (viewId === 'admin') { switchAdminTab(1); loadAdminDaily(); }
   }
 
   function initDropdowns() {
-    const itemSel = document.getElementById('itemSelect');
-    const resItem = document.getElementById('resItem');
+    const itemSel = document.getElementById('itemSelect'); const resItem = document.getElementById('resItem');
     const itemsHtml = staticData.items.map(i => `<option value="${i}">${i}</option>`).join('');
-    if(staticData.items.length > 0) {
-      itemSel.innerHTML = itemsHtml;
-      resItem.innerHTML = itemsHtml;
-    }
+    if(staticData.items.length > 0) { itemSel.innerHTML = itemsHtml; resItem.innerHTML = itemsHtml; }
     
     const classSel = document.getElementById('classSelect');
     if(staticData.classes.length > 0) classSel.innerHTML = staticData.classes.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -596,49 +624,31 @@
     if(staticData.users.length > 0) adminSwitchSel.innerHTML = staticData.users.map(u => `<option value="${u.email}">${u.name}</option>`).join('');
     adminSwitchSel.value = spoofedUserName === "" ? originalAdminEmail : staticData.userInfo.email;
 
-    document.getElementById('periodChecks').innerHTML = staticData.periods.map(p => `
-      <label class="check-item"><input type="checkbox" name="pCheck" value="${p.name}"> ${p.name}</label>
-    `).join('');
+    document.getElementById('periodChecks').innerHTML = staticData.periods.map(p => `<label class="check-item"><input type="checkbox" name="pCheck" value="${p.name}"> ${p.name}</label>`).join('');
   }
 
-  // ================= 區塊 1: 我要預約邏輯 =================
   function switchUserProxy() {
     const sel = document.getElementById('adminSwitchName');
     const newEmail = sel.value; const newName = sel.options[sel.selectedIndex].text;
     if (!newEmail || newEmail === originalAdminEmail) { resetUserProxy(); return; }
-
-    spoofedUserName = newName;
-    staticData.userInfo.name = newName; staticData.userInfo.email = newEmail; 
-    
-    document.getElementById('proxyCurrentName').innerText = newName;
-    document.getElementById('proxyAlert').style.display = 'flex';
-    updateHeaderName();
-    showSystemAlert(`✅ 已切換為代理模式！\n在「我要預約」與「我的紀錄」中的操作將屬於「${newName}」。`);
+    spoofedUserName = newName; staticData.userInfo.name = newName; staticData.userInfo.email = newEmail; 
+    document.getElementById('proxyCurrentName').innerText = newName; document.getElementById('proxyAlert').style.display = 'flex';
+    updateHeaderName(); showSystemAlert(`✅ 已切換為代理模式！\n操作將屬於「${newName}」。`);
     if(document.getElementById('view-booking').classList.contains('active')) refreshBooking();
   }
 
   function resetUserProxy() {
     if (!originalAdminName) return;
-    spoofedUserName = "";
-    staticData.userInfo.name = originalAdminName; staticData.userInfo.email = originalAdminEmail;
+    spoofedUserName = ""; staticData.userInfo.name = originalAdminName; staticData.userInfo.email = originalAdminEmail;
     document.getElementById('adminSwitchName').value = originalAdminEmail;
-    
-    document.getElementById('proxyAlert').style.display = 'none';
-    updateHeaderName();
-    showSystemAlert(`🔄 已還原為管理員本人。`);
+    document.getElementById('proxyAlert').style.display = 'none'; updateHeaderName(); showSystemAlert(`🔄 已還原為管理員本人。`);
     if(document.getElementById('view-booking').classList.contains('active')) refreshBooking();
   }
 
   function toggleLoadingState(isLoading) {
-    const dateInput = document.getElementById('targetDate');
-    const itemInput = document.getElementById('itemSelect');
-    if (isLoading) {
-      dateInput.disabled = true; dateInput.classList.add('locked-input');
-      itemInput.disabled = true; itemInput.classList.add('locked-input');
-    } else {
-      dateInput.disabled = false; dateInput.classList.remove('locked-input');
-      itemInput.disabled = false; itemInput.classList.remove('locked-input');
-    }
+    const dateInput = document.getElementById('targetDate'); const itemInput = document.getElementById('itemSelect');
+    if (isLoading) { dateInput.disabled = true; dateInput.classList.add('locked-input'); itemInput.disabled = true; itemInput.classList.add('locked-input'); } 
+    else { dateInput.disabled = false; dateInput.classList.remove('locked-input'); itemInput.disabled = false; itemInput.classList.remove('locked-input'); }
   }
 
   function renderSkeleton() {
@@ -649,33 +659,21 @@
   }
 
   function refreshBooking() {
-    const targetDate = document.getElementById('targetDate').value;
-    const targetItem = document.getElementById('itemSelect').value;
+    const targetDate = document.getElementById('targetDate').value; const targetItem = document.getElementById('itemSelect').value;
     if(!targetDate || !targetItem || targetItem.includes('無可用')) return;
-
     const requestSerial = ++bookingRequestSerial;
-
     document.getElementById('syncTag').innerText = "(同步中...)";
-    toggleLoadingState(true);
-    renderSkeleton();
-    document.getElementById('dailyBoard').style.display = 'none';
+    toggleLoadingState(true); renderSkeleton(); document.getElementById('dailyBoard').style.display = 'none';
     
-    AppAPI.call('getBookingStatus', { targetDate, selectedItem: targetItem })
-      .then(status => {
+    AppAPI.call('getBookingStatus', { targetDate, selectedItem: targetItem }).then(status => {
         const isLatestRequest = requestSerial === bookingRequestSerial;
-        const isSameSelection = document.getElementById('targetDate').value === targetDate &&
-                                document.getElementById('itemSelect').value === targetItem;
+        const isSameSelection = document.getElementById('targetDate').value === targetDate && document.getElementById('itemSelect').value === targetItem;
         if (!isLatestRequest || !isSameSelection) return;
-
-        renderDailyBoard(status);
-        renderTable(status);
-        document.getElementById('syncTag').innerText = "";
-        toggleLoadingState(false);
-      })
-      .catch(err => {
+        renderDailyBoard(status); renderTable(status);
+        document.getElementById('syncTag').innerText = ""; toggleLoadingState(false);
+      }).catch(err => {
         if (requestSerial !== bookingRequestSerial) return;
-        document.getElementById('syncTag').innerText = "(同步失敗)";
-        toggleLoadingState(false);
+        document.getElementById('syncTag').innerText = "(同步失敗)"; toggleLoadingState(false);
       });
   }
 
@@ -683,14 +681,13 @@
     const board = document.getElementById('dailyBoard');
     const tDate = document.getElementById('targetDate').value;
     const dayLabel = (tDate === getLocalTodayString()) ? "今日" : "指定日期";
-    
     if (status.dailyAll && status.dailyAll.length > 0) {
       let boardHtml = `<h3>📌 ${dayLabel} (${tDate}) 總借用狀態</h3><div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">`;
       staticData.periods.forEach(p => {
         const recordsInPeriod = status.dailyAll.filter(r => r.period === p.name);
         if (recordsInPeriod.length > 0) {
           const tags = recordsInPeriod.map(r => `<div class="daily-tag">${r.item} (${r.user})</div>`).join('');
-          boardHtml += `<div style="display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px dashed #fdebd0; padding-bottom: 10px;">
+          boardHtml += `<div style="display: flex; align-items: flex-start; gap: 10px; border-bottom: 2px dashed #fdebd0; padding-bottom: 10px;">
                           <div style="font-weight: bold; color: #d35400; width: 60px; flex-shrink: 0; margin-top: 5px;">${p.name}</div>
                           <div class="daily-tags" style="margin: 0;">${tags}</div>
                         </div>`;
@@ -698,14 +695,14 @@
       });
       board.innerHTML = boardHtml + `</div>`;
     } else {
-      board.innerHTML = `<h3>📌 ${dayLabel} (${tDate}) 總借用狀態</h3><div style="color:#888; font-size:10pt;">該日尚無任何預約紀錄</div>`;
+      board.innerHTML = `<h3>📌 ${dayLabel} (${tDate}) 總借用狀態</h3><div style="color:#888; font-size:11pt; font-weight:600;">該日尚無任何預約紀錄</div>`;
     }
     board.style.display = 'block';
   }
 
   function renderTable(status) {
     if (!status.weekDates || status.weekDates.length === 0) return;
-    let h = `<table><tr><th style="width:100px; background:#eef7ff; color:#3498db;">節次</th>`;
+    let h = `<table><tr><th style="width:90px;">節次</th>`;
     status.weekDates.forEach(d => {
       const dayIdx = new Date(d.replace(/-/g, '/')).getDay();
       h += `<th style="${(dayIdx===0||dayIdx===6)?'color: var(--danger);':''}">${d.slice(5)}<br><span style="font-size:10pt; font-weight:normal;">(${dayNames[dayIdx]})</span></th>`;
@@ -714,12 +711,11 @@
     
     const nowTs = Date.now(); 
     staticData.periods.forEach(p => {
-      h += `<tr><td style="font-weight:bold; background:#fafafa; color:#555;">${p.name}</td>`;
+      h += `<tr><td style="font-weight:bold; background:#f8fafc; color:var(--primary);">${p.name}</td>`;
       status.weekDates.forEach(d => {
         let periodEndTs = p.end ? new Date(d.replace(/-/g, '/') + ' ' + p.end).getTime() : nowTs + 9999999;
         const isB = status.records.find(r => r.date === d && r.period === p.name);
         const isR = status.restrictions.find(r => r.date === d && r.period === p.name);
-        
         if (isR) h += `<td class="cell-restricted">🔒 ${isR.note || '禁借'}</td>`;
         else if (isB) {
           const currentEmail = String(staticData.userInfo.email || '').trim().toLowerCase();
@@ -737,9 +733,8 @@
 
   function openModal(d, p) {
     currentSel = { d, p, item: document.getElementById('itemSelect').value };
-    document.getElementById('confirmDetail').innerHTML = `借用日期：<b>${d}</b><br>節次：<b>${p}</b><br>設備：<b>${currentSel.item}</b>`;
-    document.getElementById('overlay').style.display = 'block';
-    document.getElementById('modal').style.display = 'block';
+    document.getElementById('confirmDetail').innerHTML = `📅 借用日期：<b>${d}</b><br>⏱️ 節次：<b>${p}</b><br>🔬 設備：<b>${currentSel.item}</b>`;
+    document.getElementById('overlay').style.display = 'block'; document.getElementById('modal').style.display = 'block';
   }
   function closeModal() { document.getElementById('overlay').style.display = 'none'; document.getElementById('modal').style.display = 'none'; }
   function togglePurpose() {
@@ -753,36 +748,22 @@
     const btn = document.querySelector('#modal button');
     btn.innerText = "⏳ 處理中..."; btn.disabled = true;
 
-    AppAPI.call('submitBooking', { 
-        date: currentSel.d, 
-        period: currentSel.p, 
-        item: currentSel.item, 
-        user: staticData.userInfo.name, 
-        email: staticData.userInfo.email, 
-        purpose: pVal 
-    }).then((res) => {
+    AppAPI.call('submitBooking', { date: currentSel.d, period: currentSel.p, item: currentSel.item, user: staticData.userInfo.name, email: staticData.userInfo.email, purpose: pVal })
+      .then((res) => {
         btn.innerText = "送出預約"; btn.disabled = false; closeModal();
-        if (res && res.success) {
-           showSystemAlert("✅ 預約成功！"); refreshBooking(); 
-        } else { 
-           showSystemAlert(res ? res.msg : "發生錯誤"); refreshBooking(); 
-        }
+        if (res && res.success) { showSystemAlert("✅ 預約成功！"); refreshBooking(); } 
+        else { showSystemAlert(res ? res.msg : "發生錯誤"); refreshBooking(); }
       }).catch(err => {
         btn.innerText = "送出預約"; btn.disabled = false; closeModal();
         showSystemAlert("連線錯誤，預約失敗");
       });
   }
 
-  // ================= 區塊 2: 我的紀錄邏輯 =================
   function loadMyRecordsData() {
     const upBox = document.getElementById('list-upcoming');
     upBox.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
     document.getElementById('list-past').innerHTML = '';
-    
-    AppAPI.call('getMyRecords', { email: staticData.userInfo.email }).then(records => {
-      allMyRecords = records;
-      renderRecordLists();
-    }).catch(err => console.error("載入紀錄失敗", err));
+    AppAPI.call('getMyRecords', { email: staticData.userInfo.email }).then(records => { allMyRecords = records; renderRecordLists(); }).catch(err => console.error("載入紀錄失敗", err));
   }
 
   function getPeriodEndTime(periodName) {
@@ -793,45 +774,24 @@
   function renderRecordLists() {
     const nowTs = Date.now();
     let upcoming = [], pastEnded = [], pastCancelled = [];
-    
     allMyRecords.forEach(r => {
       if (r.purpose === '已取消') { pastCancelled.push(r); return; }
       let isPast = false;
       const pInfo = staticData.periods.find(p => p.name === r.period);
-
-      if (pInfo && pInfo.end) {
-        if (nowTs > new Date(r.date.replace(/-/g, '/') + ' ' + pInfo.end).getTime()) isPast = true;
-      } else {
-        if (r.date < getLocalTodayString()) isPast = true;
-      }
-
+      if (pInfo && pInfo.end) { if (nowTs > new Date(r.date.replace(/-/g, '/') + ' ' + pInfo.end).getTime()) isPast = true; } 
+      else { if (r.date < getLocalTodayString()) isPast = true; }
       if (isPast) pastEnded.push(r); else upcoming.push(r);
     });
-    
-    const sortLogicDesc = (a, b) => {
-      if (a.date !== b.date) return b.date.localeCompare(a.date); 
-      return getPeriodEndTime(a.period).localeCompare(getPeriodEndTime(b.period)); 
-    };
-    const sortLogicAsc = (a, b) => {
-      if (a.date !== b.date) return a.date.localeCompare(b.date); 
-      return getPeriodEndTime(a.period).localeCompare(getPeriodEndTime(b.period)); 
-    };
+    const sortLogicDesc = (a, b) => { if (a.date !== b.date) return b.date.localeCompare(a.date); return getPeriodEndTime(a.period).localeCompare(getPeriodEndTime(b.period)); };
+    const sortLogicAsc = (a, b) => { if (a.date !== b.date) return a.date.localeCompare(b.date); return getPeriodEndTime(a.period).localeCompare(getPeriodEndTime(b.period)); };
 
-    upcoming.sort(sortLogicAsc);
-    pastEnded.sort(sortLogicDesc); pastCancelled.sort(sortLogicDesc);
+    upcoming.sort(sortLogicAsc); pastEnded.sort(sortLogicDesc); pastCancelled.sort(sortLogicDesc);
 
     const upBox = document.getElementById('list-upcoming');
-    upBox.innerHTML = upcoming.length 
-      ? upcoming.map(r => createRecordCard(r, true)).join('') 
-      : '<div style="text-align:center; padding:30px; color:#999; background:#f9f9f9; border-radius:8px;">目前沒有即將到來的預約 🎉</div>';
-    
+    upBox.innerHTML = upcoming.length ? upcoming.map(r => createRecordCard(r, true)).join('') : '<div style="text-align:center; padding:40px; color:#94a3b8; background:#f8fafc; border-radius:12px; font-weight:bold; border: 2px dashed #cbd5e1;">目前沒有即將到來的預約 🎉</div>';
     const pastBox = document.getElementById('list-past');
-    if (pastEnded.length === 0 && pastCancelled.length === 0) {
-      pastBox.innerHTML = '<div style="text-align:center; padding:30px; color:#999; background:#f9f9f9; border-radius:8px;">目前沒有歷史紀錄</div>';
-    } else {
-      pastBox.innerHTML = (pastEnded.length > 0 ? `<div class="group-title" style="color:var(--gray);">☑️ 已結束</div>` + pastEnded.map(r => createRecordCard(r, false)).join('') : '') +
-                          (pastCancelled.length > 0 ? `<div class="group-title" style="color:var(--danger);">🚫 已取消</div>` + pastCancelled.map(r => createRecordCard(r, false)).join('') : '');
-    }
+    if (pastEnded.length === 0 && pastCancelled.length === 0) { pastBox.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8; background:#f8fafc; border-radius:12px; font-weight:bold; border: 2px dashed #cbd5e1;">目前沒有歷史紀錄</div>'; } 
+    else { pastBox.innerHTML = (pastEnded.length > 0 ? `<div style="font-size: 13pt; font-weight: bold; margin: 25px 0 10px 0; color:var(--gray);">☑️ 已結束</div>` + pastEnded.map(r => createRecordCard(r, false)).join('') : '') + (pastCancelled.length > 0 ? `<div style="font-size: 13pt; font-weight: bold; margin: 25px 0 10px 0; color:var(--danger);">🚫 已取消</div>` + pastCancelled.map(r => createRecordCard(r, false)).join('') : ''); }
   }
 
   function createRecordCard(r, isUpcoming) {
@@ -842,7 +802,7 @@
     return `<div class="${cardClass}">
               <div class="info">
                 <div class="title">📅 ${r.date} &nbsp;|&nbsp; ⏱️ ${r.period}</div>
-                <div class="detail">設備/教室：<span>${r.item}</span><br>預約用途：${r.purpose !== '已取消' ? r.purpose : '<span style="color:#aaa; font-weight:normal;">--</span>'}</div>
+                <div class="detail">設備/教室：<span>${r.item}</span><br>預約用途：${r.purpose !== '已取消' ? r.purpose : '<span style="color:#aaa; font-weight:normal; background:transparent;">--</span>'}</div>
               </div>
               <div>${actionHtml}</div>
             </div>`;
@@ -864,50 +824,34 @@
     });
   }
 
-  // ================= 區塊 3: 管理後台邏輯 =================
   function switchAdminTab(n) {
-    document.getElementById('admin-page1').style.display = n === 1 ? 'block' : 'none';
-    document.getElementById('admin-page2').style.display = n === 2 ? 'block' : 'none';
-    document.getElementById('admin-page3').style.display = n === 3 ? 'block' : 'none'; 
-    
-    document.getElementById('admin-t1').className = n === 1 ? 'admin-tab active' : 'admin-tab';
-    document.getElementById('admin-t2').className = n === 2 ? 'admin-tab active' : 'admin-tab';
-    document.getElementById('admin-t3').className = n === 3 ? 'admin-tab active' : 'admin-tab'; 
-    
-    if (n === 3) {
-      loadChart();
-    }
+    [1,2,3].forEach(i => {
+      document.getElementById('admin-page'+i).style.display = n === i ? 'block' : 'none';
+      document.getElementById('admin-t'+i).className = n === i ? 'admin-tab active' : 'admin-tab';
+    });
+    if (n === 3) loadChart();
   }
 
   function loadAdminDaily(isSilent = false) {
     const box = document.getElementById('adminDailyList');
-    if (!isSilent) {
-      box.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
-    }
-    AppAPI.call('getAdminDailyRecords', { date: document.getElementById('adminDate').value }).then(records => {
-      if(records) renderAdminDailyRecords(records);
-    }).catch(err => console.error("載入管理員紀錄失敗", err));
+    if (!isSilent) box.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    AppAPI.call('getAdminDailyRecords', { date: document.getElementById('adminDate').value }).then(records => { if(records) renderAdminDailyRecords(records); }).catch(err => console.error("載入管理員紀錄失敗", err));
   }
 
   function renderAdminDailyRecords(records) {
     const box = document.getElementById('adminDailyList');
-    if(records.length === 0) { 
-      box.innerHTML = "<div style='text-align:center; padding:30px; color:#999; background:#f9f9f9; border-radius:8px;'>本日無預約紀錄</div>"; 
-      return; 
-    }
-    
+    if(records.length === 0) { box.innerHTML = "<div style='text-align:center; padding:40px; color:#94a3b8; background:#f8fafc; border-radius:12px; font-weight:bold; border: 2px dashed #cbd5e1;'>本日無預約紀錄</div>"; return; }
     let html = '';
-    
     staticData.periods.forEach(p => {
       const pRecords = records.filter(r => r.period === p.name);
       if (pRecords.length > 0) {
-        html += `<h3 style="color:var(--admin-purple); margin: 20px 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; font-size: 13pt;">📍 ${p.name}</h3>`;
+        html += `<h3 style="color:var(--admin-purple); margin: 25px 0 15px 0; font-size: 14pt; font-family:'Fredoka', sans-serif;">📍 ${p.name}</h3>`;
         html += pRecords.map(r => `
           <div class="admin-card">
-            <div style="font-weight:bold; font-size:12pt; color:#333;">${r.item}</div>
-            <div style="color:#666; margin-top:5px; font-size:11pt;">借用人：<span style="color:var(--admin-purple); font-weight:bold;">${r.user}</span> (${r.purpose})</div>
+            <div style="font-weight:bold; font-size:13pt; color:var(--primary);">${r.item}</div>
+            <div style="color:#64748b; margin-top:8px; font-size:11pt; font-weight:600;">借用人：<span style="color:var(--admin-purple); font-weight:700; background:#f1f5f9; padding:2px 6px; border-radius:6px;">${r.user}</span> (${r.purpose})</div>
             <div class="key-group" style="align-items: center;">
-              <span style="font-weight:bold; color:#555; font-size:11pt; white-space:nowrap;">🔑 鑰匙：</span>
+              <span style="font-weight:bold; color:#94a3b8; font-size:11pt; white-space:nowrap;">🔑 鑰匙：</span>
               <button class="key-btn ${r.keyStatus==='未借出'?'active-unlent':''}" onclick="setKey(${r.rowId}, '未借出', this)">未借出</button>
               <button class="key-btn ${r.keyStatus==='已借出'?'active-lent':''}" onclick="setKey(${r.rowId}, '已借出', this)">已借出</button>
               <button class="key-btn ${r.keyStatus==='已歸還'?'active-returned':''}" onclick="setKey(${r.rowId}, '已歸還', this)">已歸還</button>
@@ -916,31 +860,11 @@
         `).join('');
       }
     });
-    
-    const knownPeriods = staticData.periods.map(p => p.name);
-    const otherRecords = records.filter(r => !knownPeriods.includes(r.period));
-    
-    if (otherRecords.length > 0) {
-        html += `<h3 style="color:#e74c3c; margin: 20px 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; font-size: 13pt;">📍 其他/例外時段</h3>`;
-        html += otherRecords.map(r => `
-          <div class="admin-card" style="border-left-color: #e74c3c;">
-            <div style="font-weight:bold; font-size:12pt; color:#333;">${r.period} | ${r.item}</div>
-            <div style="color:#666; margin-top:5px; font-size:11pt;">借用人：<span style="color:#e74c3c; font-weight:bold;">${r.user}</span> (${r.purpose})</div>
-            <div class="key-group" style="align-items: center;">
-              <span style="font-weight:bold; color:#555; font-size:11pt; white-space:nowrap;">🔑 鑰匙：</span>
-              <button class="key-btn ${r.keyStatus==='未借出'?'active-unlent':''}" onclick="setKey(${r.rowId}, '未借出', this)">未借出</button>
-              <button class="key-btn ${r.keyStatus==='已借出'?'active-lent':''}" onclick="setKey(${r.rowId}, '已借出', this)">已借出</button>
-              <button class="key-btn ${r.keyStatus==='已歸還'?'active-returned':''}" onclick="setKey(${r.rowId}, '已歸還', this)">已歸還</button>
-            </div>
-          </div>
-        `).join('');
-    }
     box.innerHTML = html;
   }
 
   function setKey(id, status, btn) {
-    const row = btn.parentElement;
-    row.querySelectorAll('.key-btn').forEach(b => b.className = 'key-btn');
+    const row = btn.parentElement; row.querySelectorAll('.key-btn').forEach(b => b.className = 'key-btn');
     if(status==='未借出') btn.classList.add('active-unlent');
     if(status==='已借出') btn.classList.add('active-lent');
     if(status==='已歸還') btn.classList.add('active-returned');
@@ -948,11 +872,7 @@
   }
 
   function submitRestrict() {
-    const item = document.getElementById('resItem').value;
-    const sDate = document.getElementById('resStartDate').value;
-    const eDate = document.getElementById('resEndDate').value;
-    const note = document.getElementById('resNote').value;
-    
+    const item = document.getElementById('resItem').value; const sDate = document.getElementById('resStartDate').value; const eDate = document.getElementById('resEndDate').value; const note = document.getElementById('resNote').value;
     const days = Array.from(document.querySelectorAll('input[name="dCheck"]:checked')).map(cb => cb.value);
     const periods = Array.from(document.querySelectorAll('input[name="pCheck"]:checked')).map(cb => cb.value);
     
@@ -962,33 +882,19 @@
     if(periods.length === 0) { showSystemAlert("請至少勾選一個禁借節次！"); return; }
     if(!note) { showSystemAlert("請填寫備註原因！"); return; }
     
-    const btn = document.getElementById('resSubmitBtn');
-    btn.innerText = "⏳ 寫入資料中，請稍候..."; btn.disabled = true;
-    
-    AppAPI.call('batchRestrictAdvanced', { 
-      item: item, sDateStr: sDate, eDateStr: eDate, daysOfWeek: days, periods: periods, note: note 
-    }).then((res) => {
-      if(res.success) {
-        showSystemAlert("✅ " + res.msg);
-        document.querySelectorAll('input[name="pCheck"]').forEach(cb => cb.checked = false);
-        document.getElementById('resNote').value = "";
-      } else {
-        showSystemAlert("⚠️ " + res.msg);
-      }
+    const btn = document.getElementById('resSubmitBtn'); btn.innerText = "⏳ 寫入資料中，請稍候..."; btn.disabled = true;
+    AppAPI.call('batchRestrictAdvanced', { item: item, sDateStr: sDate, eDateStr: eDate, daysOfWeek: days, periods: periods, note: note }).then((res) => {
+      if(res.success) { showSystemAlert("✅ " + res.msg); document.querySelectorAll('input[name="pCheck"]').forEach(cb => cb.checked = false); document.getElementById('resNote').value = ""; } 
+      else { showSystemAlert("⚠️ " + res.msg); }
       btn.innerText = "確認並寫入設定"; btn.disabled = false;
-    }).catch(err => {
-      showSystemAlert("系統錯誤");
-      btn.innerText = "確認並寫入設定"; btn.disabled = false;
-    });
+    }).catch(err => { showSystemAlert("系統錯誤"); btn.innerText = "確認並寫入設定"; btn.disabled = false; });
   }
 
-  // ================= 共用 Alert / Confirm 系統 =================
   let confirmCallback = null;
   function showSystemConfirm(msg, callback) {
     document.getElementById('alertMessage').innerText = msg;
     document.getElementById('alertBtns').innerHTML = `<div class="confirm-btns"><button class="btn-cancel-modal" onclick="closeSystemAlert()">取消</button><button class="btn-confirm-modal" onclick="executeConfirm()">確定</button></div>`;
-    confirmCallback = callback;
-    document.getElementById('alertOverlay').style.display = 'block'; document.getElementById('alertModal').style.display = 'block';
+    confirmCallback = callback; document.getElementById('alertOverlay').style.display = 'block'; document.getElementById('alertModal').style.display = 'block';
   }
   function executeConfirm() { closeSystemAlert(); if(confirmCallback) confirmCallback(); }
   function showSystemAlert(msg) {
@@ -998,120 +904,75 @@
   }
   function closeSystemAlert() { document.getElementById('alertOverlay').style.display = 'none'; document.getElementById('alertModal').style.display = 'none'; }
 
-  // ================= 區塊 4: 📊 統計圖表與排行榜邏輯 =================
-  let currentChartData = {
-    item: { labels: [], values: [] },
-    user: { labels: [], values: [] }
-  };
+  let currentChartData = { item: { labels: [], values: [] }, user: { labels: [], values: [] } };
   let currentChartMode = 'item'; 
 
   function loadChart() {
     document.getElementById('leaderboardList').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
-    
     AppAPI.call('getStatisticsData').then(function(data) {
       let sortedItems = data.items.sort((a, b) => b.count - a.count).slice(0, 10);
       let sortedUsers = data.users.sort((a, b) => b.count - a.count).slice(0, 10);
-
-      currentChartData.item.labels = sortedItems.map(d => d.name);
-      currentChartData.item.values = sortedItems.map(d => d.count);
-      
-      currentChartData.user.labels = sortedUsers.map(d => d.name);
-      currentChartData.user.values = sortedUsers.map(d => d.count);
-
+      currentChartData.item.labels = sortedItems.map(d => d.name); currentChartData.item.values = sortedItems.map(d => d.count);
+      currentChartData.user.labels = sortedUsers.map(d => d.name); currentChartData.user.values = sortedUsers.map(d => d.count);
       renderDashboard();
     }).catch(err => console.error("獲取統計資料失敗", err));
   }
 
   function switchChartTab(mode) {
     currentChartMode = mode;
-    document.getElementById('ctab-item').classList.toggle('active', mode === 'item');
-    document.getElementById('ctab-user').classList.toggle('active', mode === 'user');
+    document.getElementById('ctab-item').classList.toggle('active', mode === 'item'); document.getElementById('ctab-user').classList.toggle('active', mode === 'user');
     renderDashboard(); 
   }
 
   function renderDashboard() {
     const dataObj = currentChartData[currentChartMode];
-    const labels = dataObj.labels;
-    const values = dataObj.values;
+    const labels = dataObj.labels; const values = dataObj.values;
     const labelTitle = currentChartMode === 'item' ? '設備借用次數' : '使用者借用次數';
-    const color = currentChartMode === 'item' ? 'rgba(142, 68, 173, 0.6)' : 'rgba(41, 128, 185, 0.6)'; 
-    const borderColor = currentChartMode === 'item' ? 'rgba(142, 68, 173, 1)' : 'rgba(41, 128, 185, 1)';
-
+    const color = currentChartMode === 'item' ? 'rgba(37, 51, 76, 0.7)' : 'rgba(123, 181, 230, 0.8)'; 
+    const borderColor = currentChartMode === 'item' ? 'rgba(37, 51, 76, 1)' : 'rgba(123, 181, 230, 1)';
     const ctx = document.getElementById('myChart').getContext('2d');
     if (myChartInstance) myChartInstance.destroy();
     
     myChartInstance = new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{ label: labelTitle, data: values, backgroundColor: color, borderColor: borderColor, borderWidth: 1, borderRadius: 4 }]
-      },
+      data: { labels: labels, datasets: [{ label: labelTitle, data: values, backgroundColor: color, borderColor: borderColor, borderWidth: 2, borderRadius: 6 }] },
       options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
     });
 
     const board = document.getElementById('leaderboardList');
-    if (labels.length === 0) {
-      board.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">尚無借用紀錄</div>';
-      return;
-    }
-
-    let html = '';
-    const medals = ['🥇', '🥈', '🥉'];
+    if (labels.length === 0) { board.innerHTML = '<div style="text-align:center; padding:30px; color:#999; font-weight:bold;">尚無借用紀錄</div>'; return; }
+    let html = ''; const medals = ['🥇', '🥈', '🥉'];
     for(let i = 0; i < labels.length; i++) {
       let rankIcon = i < 3 ? medals[i] : (i + 1);
-      html += `
-        <li class="leaderboard-item rank-${i+1}">
-          <div class="rank-badge">${rankIcon}</div>
-          <div class="item-name">${labels[i]}</div>
-          <div class="item-count">${values[i]} <span style="font-size:9pt; color:#888;">次</span></div>
-        </li>
-      `;
+      html += `<li class="leaderboard-item rank-${i+1}"><div class="rank-badge">${rankIcon}</div><div class="item-name">${labels[i]}</div><div class="item-count">${values[i]} <span style="font-size:9pt; color:#888;">次</span></div></li>`;
     }
     board.innerHTML = html;
   }
 
   function downloadChart() {
     if (!myChartInstance) return showSystemAlert("資料尚未載入！");
-    const canvas = document.getElementById('myChart');
-    const destCanvas = document.createElement('canvas');
+    const canvas = document.getElementById('myChart'); const destCanvas = document.createElement('canvas');
     destCanvas.width = canvas.width; destCanvas.height = canvas.height;
     const destCtx = destCanvas.getContext('2d');
-    destCtx.fillStyle = '#FFFFFF'; destCtx.fillRect(0, 0, destCanvas.width, destCanvas.height);
-    destCtx.drawImage(canvas, 0, 0);
-    
-    const link = document.createElement('a');
-    link.href = destCanvas.toDataURL('image/png');
+    destCtx.fillStyle = '#f8fafc'; destCtx.fillRect(0, 0, destCanvas.width, destCanvas.height); destCtx.drawImage(canvas, 0, 0);
+    const link = document.createElement('a'); link.href = destCanvas.toDataURL('image/png');
     const title = currentChartMode === 'item' ? '設備排行榜' : '達人排行榜';
-    link.download = `預約系統_${title}_${new Date().toISOString().split('T')[0]}.png`; 
-    link.click();
+    link.download = `Lab_Equipment_${title}_${new Date().toISOString().split('T')[0]}.png`; link.click();
   }
 
   function downloadCSV() {
     const dataObj = currentChartData[currentChartMode];
     if (dataObj.labels.length === 0) return showSystemAlert("目前沒有資料可以匯出喔！");
-
     const titleName = currentChartMode === 'item' ? '設備/教室名稱' : '使用者姓名';
-    
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
-    csvContent += `排名,${titleName},總借用次數\n`; 
-    
-    for(let i = 0; i < dataObj.labels.length; i++) {
-      let safeName = `"${dataObj.labels[i]}"`; 
-      csvContent += `${i+1},${safeName},${dataObj.values[i]}\n`;
-    }
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; csvContent += `排名,${titleName},總借用次數\n`; 
+    for(let i = 0; i < dataObj.labels.length; i++) { csvContent += `${i+1},"${dataObj.labels[i]}",${dataObj.values[i]}\n`; }
+    const encodedUri = encodeURI(csvContent); const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    
     const fileTitle = currentChartMode === 'item' ? '設備統計' : '使用者統計';
-    link.setAttribute("download", `預約系統_${fileTitle}_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.setAttribute("download", `Lab_Equipment_${fileTitle}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
   }
 
 </script>
 </body>
 </html>
-

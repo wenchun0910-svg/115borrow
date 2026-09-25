@@ -144,8 +144,10 @@
     .login-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 11pt; }
     .btn-login { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 12pt; cursor: pointer; transition: 0.2s; }
     
-    #overlay, #alertOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; }
-    #modal, #alertModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:25px; border-radius:12px; z-index:2001; width:300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+    /* 修正圖層高度 z-index，確保不會被登入視窗遮擋 */
+    #overlay, #alertOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; }
+    #modal, #alertModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:25px; border-radius:12px; z-index:10001; width:300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+    
     .modal-input { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 11pt; text-align: left; }
     .btn-alert { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; }
     .confirm-btns { display: flex; gap: 10px; margin-top: 15px; }
@@ -342,15 +344,7 @@
 <script>
   // ================= 核心：API 呼叫封裝 =================
   
-  // ⚠️ 部署說明 ⚠️
-  // 1. 將 `code.gs` 貼入 Google Apps Script。
-  // 2. 點擊右上角「部署」 -> 「新增部署作業」。
-  // 3. 類型選擇「網頁應用程式 (Web App)」。
-  // 4. "執行身份" 必須選擇「我 (你的帳號)」。
-  // 5. "誰可以存取" 必須選擇「所有人 (Anyone)」。
-  // 6. 點擊「部署」，並授權權限。
-  // 7. 複製產生的「網頁應用程式網址 (URL)」，貼到下方的 GAS_API_URL 變數中。
-  
+  // ⚠️ 請確保此處為最新發佈（且權限為所有人）的 Google Apps Script 網址
   const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwXcZGRIR37RdKm1Ai4d8bnbNCfKB6amhCMdds9BvqGgbApYxEZeA7r0mKhnRkdCeJH/exec"; 
 
   const AppAPI = {
@@ -363,7 +357,7 @@
       try {
         const response = await fetch(GAS_API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 避免 CORS 預檢複雜化，使用 text/plain
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: action, payload: payload })
         });
         
@@ -457,7 +451,10 @@
            localStorage.setItem('localUserList_v2', JSON.stringify(users));
            if (!localUsers) renderLoginNameSelect(users); 
         }
-      }).catch(err => console.error("獲取使用者名單失敗", err));
+      }).catch(err => {
+          console.error("獲取使用者名單失敗", err);
+          showSystemAlert("⚠️ 無法載入名單！\n請檢查 API 網址是否正確，且已部署最新版本。");
+      });
     }
   };
 
@@ -477,11 +474,11 @@
             btn.innerText = "確認登入"; btn.disabled = false;
             initSPA();
          } else {
-            showSystemAlert(res.msg);
+            showSystemAlert("❌ " + res.msg);
             btn.innerText = "確認登入"; btn.disabled = false;
          }
       }).catch(err => {
-         showSystemAlert("系統連線發生錯誤，請稍後再試。");
+         showSystemAlert("⚠️ 系統連線失敗！\n可能是尚未發佈新版本，或學校網域封鎖了權限。\n(錯誤: " + err.message + ")");
          btn.innerText = "確認登入"; btn.disabled = false;
       });
   }
@@ -656,7 +653,6 @@
     const targetItem = document.getElementById('itemSelect').value;
     if(!targetDate || !targetItem || targetItem.includes('無可用')) return;
 
-    // 每次查詢建立新的序號，避免較慢的舊回應覆蓋最新畫面。
     const requestSerial = ++bookingRequestSerial;
 
     document.getElementById('syncTag').innerText = "(同步中...)";
@@ -728,7 +724,6 @@
         else if (isB) {
           const currentEmail = String(staticData.userInfo.email || '').trim().toLowerCase();
           const bookedEmail = String(isB.email || '').trim().toLowerCase();
-          // 新資料用 Email 判斷本人，舊資料沒有 Email 時才退回姓名判斷。
           const isMe = bookedEmail ? bookedEmail === currentEmail : isB.user === staticData.userInfo.name;
           h += `<td><span class="${isMe?'cell-mine':'cell-booked'}">${isMe?'本人預約':isB.user}</span></td>`;
         } 

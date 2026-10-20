@@ -539,8 +539,6 @@ const firebaseConfig = {
   appId: "1:120933626729:web:8f34dd531ca8cf29f7c3f8"
 };
 
-
-  const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : fallbackConfig;
   const appId = typeof __app_id !== 'undefined' ? __app_id : 'school-booking-app-v3';
 
   let app, db, auth, userId;

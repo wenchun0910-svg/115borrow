@@ -3,126 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>長安教學設備借用系統</title>
+  <title>長安場地使用系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     :root { 
-      --primary: #1282a2;
-      --primary-light: #034078;
-      --bg: #e0fbfc;
+      --primary: #264e70;        /* 藍鐵 / 靛藍 */
+      --primary-light: #1b365d;  /* 紺青 / 深藍 */
+      --accent-blue: #4b7bec;    /* 露草色 */
+      --bg: #f0f4f8;             /* 白藍和紙底色 */
       --container-bg: #ffffff;
-      --text-dark: #0a1128;
-      --success: #38b000; 
-      --danger: #d90429; 
-      --past: #ced4da; 
-      --gray: #6c757d; 
-      --admin-purple: #006466;
-      --admin-bg: #ebfbfb;     
+      --text-dark: #1e293b;      /* 墨色 */
+      --border-soft: #cbd5e1;    /* 淡灰藍框線 */
+      --border-light: #e2e8f0;
+      --success: #2a8356;        /* 若竹色 / 常磐綠 */
+      --danger: #b92b27;         /* 茜色 / 胭脂紅 */
+      --past: #cbd5e1; 
+      --gray: #64748b; 
+      --admin-purple: #1d4c6b;   /* 納戸色 */
+      --admin-bg: #f1f6f9;     
     }
-    body { font-family: 'Nunito', 'Microsoft JhengHei', sans-serif; background-color: var(--bg); margin: 0; padding: 0; font-size: 11pt; color: #333; overflow-x: hidden; }
-    h1, h2, h3, .app-title { font-family: 'Fredoka', 'Microsoft JhengHei', sans-serif; color: var(--primary-light); }
-    .bg-illustration { position: fixed; opacity: 0.85; z-index: 0; pointer-events: none; }
-    .app-wrapper { position: relative; max-width: 1000px; margin: 30px auto; z-index: 10; filter: drop-shadow(0 15px 30px rgba(18, 130, 162, 0.15)); }
-    .wavy-top { width: 100%; height: 60px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="%23ffffff" d="M0,40 Q60,0 120,40 T240,40 T360,40 T480,40 T600,40 T720,40 T840,40 T960,40 T1080,40 T1200,40 T1320,40 T1440,40 L1440,100 L0,100 Z"></path></svg>') no-repeat bottom; background-size: 100% 60px; }
-    .wavy-bottom { width: 100%; height: 45px; background-color: #e6ccb2; background-image: repeating-linear-gradient(15deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px), repeating-linear-gradient(-15deg, transparent, transparent 15px, rgba(0,0,0,0.02) 15px, rgba(0,0,0,0.02) 30px); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
-    .main-content { background-color: var(--container-bg); padding: 10px 40px 40px 40px; }
-    @media (max-width: 768px) { .app-wrapper { margin: 10px auto; } .main-content { padding: 10px 20px 30px 20px; } .bg-illustration { display: none; } }
-    .app-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px; border-bottom: 3px dashed #caf0f8; padding-bottom: 15px; }
-    .app-title { font-size: 2.2rem; margin: 0; color: var(--primary); letter-spacing: 1px; font-weight: bold; }
-    .app-nav { display: flex; gap: 10px; flex-grow: 1; justify-content: center; overflow-x: auto; white-space: nowrap; margin-top: 10px; }
-    .nav-item { padding: 10px 20px; cursor: pointer; font-weight: 700; color: #777; background: #f8f9fa; border-radius: 30px; transition: 0.3s; font-size: 11pt; border: 2px solid transparent; }
-    .nav-item:hover { background: #e0fbfc; transform: translateY(-2px); }
-    .nav-item.active { background: var(--primary); color: white; border-color: var(--primary-light); box-shadow: 0 4px 10px rgba(18, 130, 162, 0.3); }
-    .nav-item.admin-nav { background: #f5f5f5; color: var(--admin-purple); display: none; }
+    body { 
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; 
+      background-color: var(--bg); 
+      background-image: radial-gradient(#d5e0ec 1px, transparent 1px);
+      background-size: 20px 20px;
+      margin: 0; padding: 0; font-size: 11pt; color: var(--text-dark); overflow-x: hidden; 
+    }
+    h1, h2, h3, .app-title { 
+      font-family: 'Noto Serif TC', 'Noto Sans TC', 'Microsoft JhengHei', serif; 
+      color: var(--primary-light); 
+      letter-spacing: 1px;
+    }
+    .bg-illustration { position: fixed; opacity: 0.7; z-index: 0; pointer-events: none; }
+    .app-wrapper { 
+      position: relative; max-width: 1000px; margin: 30px auto; z-index: 10; 
+      box-shadow: 0 12px 35px rgba(27, 54, 93, 0.12); 
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+    }
+    /* 日式青海波 (Seigaiha) 紋樣頂部飾條 */
+    .wavy-top { 
+      width: 100%; height: 28px; 
+      background-color: var(--primary-light);
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="28" viewBox="0 0 56 28"><g fill="none" stroke="%235c82a6" stroke-width="1.3" opacity="0.55"><circle cx="28" cy="28" r="24"/><circle cx="28" cy="28" r="18"/><circle cx="28" cy="28" r="12"/><circle cx="28" cy="28" r="6"/><circle cx="0" cy="28" r="24"/><circle cx="0" cy="28" r="18"/><circle cx="0" cy="28" r="12"/><circle cx="0" cy="28" r="6"/><circle cx="56" cy="28" r="24"/><circle cx="56" cy="28" r="18"/><circle cx="56" cy="28" r="12"/><circle cx="56" cy="28" r="6"/><circle cx="14" cy="14" r="24"/><circle cx="14" cy="14" r="18"/><circle cx="14" cy="14" r="12"/><circle cx="14" cy="14" r="6"/><circle cx="42" cy="14" r="24"/><circle cx="42" cy="14" r="18"/><circle cx="42" cy="14" r="12"/><circle cx="42" cy="14" r="6"/></g></svg>');
+      border-bottom: 3px solid #c5a059;
+    }
+    /* 日式白木 (Hinoki) 底部木紋 */
+    .wavy-bottom { 
+      width: 100%; height: 24px; 
+      background-color: #d9c3a9; 
+      border-top: 2px solid #c5a059;
+      background-image: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.18) 40px, rgba(255,255,255,0.18) 80px);
+    }
+    .main-content { background-color: var(--container-bg); padding: 25px 40px 40px 40px; }
+    @media (max-width: 768px) { .app-wrapper { margin: 10px; } .main-content { padding: 15px 20px 30px 20px; } .bg-illustration { display: none; } }
+    .app-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 18px; position: relative; }
+    .app-header::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 120px; height: 2px; background: var(--primary); }
+    .app-title { font-size: 1.9rem; margin: 0; color: var(--primary-light); letter-spacing: 2px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .app-nav { display: flex; gap: 12px; flex-grow: 1; justify-content: center; overflow-x: auto; white-space: nowrap; margin-top: 15px; }
+    .nav-item { padding: 9px 22px; cursor: pointer; font-weight: 700; color: #475569; background: #f8fafc; border-radius: 6px; transition: 0.25s; font-size: 11pt; border: 1px solid #cbd5e1; letter-spacing: 1px; }
+    .nav-item:hover { background: #e2e8f0; color: var(--primary-light); }
+    .nav-item.active { background: var(--primary); color: white; border-color: var(--primary-light); box-shadow: 0 3px 8px rgba(38, 78, 112, 0.25); }
+    .nav-item.admin-nav { background: #f1f5f9; color: var(--admin-purple); display: none; border-color: #94a3b8; }
     .nav-item.admin-nav.active { background: var(--admin-purple); color: white; border-color: var(--admin-purple); }
-    .header-user { font-size: 11pt; color: #fff; background: var(--primary-light); padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 10px; font-weight: 700; }
-    .btn-logout { background: #ffccd5; border: 1px solid #ffb3c1; color: #c9184a; font-weight: bold; cursor: pointer; padding: 4px 10px; border-radius: 15px; font-size: 10pt; transition: 0.2s; }
-    .btn-logout:hover { background: #ffb3c1; }
-    .view-section { display: none; animation: fadeIn 0.4s ease; }
+    .header-user { font-size: 10.5pt; color: #fff; background: var(--primary-light); padding: 7px 16px; border-radius: 6px; display: flex; align-items: center; gap: 12px; font-weight: 500; border: 1px solid #0f2547; letter-spacing: 0.5px; }
+    .btn-logout { background: #fff1f2; border: 1px solid #fecdd3; color: var(--danger); font-weight: bold; cursor: pointer; padding: 4px 12px; border-radius: 4px; font-size: 9.5pt; transition: 0.2s; }
+    .btn-logout:hover { background: #ffe4e6; }
+    .view-section { display: none; animation: fadeIn 0.35s ease; }
     .view-section.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .booking-controls { display:grid; grid-template-columns: 1fr 1fr; gap:15px; background: #f1fafa; padding:20px; border-radius:15px; margin-bottom:20px; border: 2px solid #caf0f8; }
-    .booking-controls label { font-weight: 700; color: var(--primary); font-size: 11pt; }
-    .booking-controls input, .booking-controls select { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #caf0f8; margin-top: 8px; box-sizing: border-box; font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 11pt; color: var(--primary); }
-    .locked-input { opacity: 0.7; cursor: not-allowed !important; background-color: #f8f9fa !important; }
-    .proxy-alert { display:none; background: #fff9c4; color:#f57f17; padding:15px; border-radius:12px; margin-bottom:20px; font-weight:bold; align-items: center; gap: 10px; border: 2px dashed #fbc02d; }
-    .daily-board { background: #f1f8e9; border: 2px dashed #aed581; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-    .daily-board h3 { margin: 0 0 15px 0; color: #558b2f; font-size: 13pt; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .booking-controls { display:grid; grid-template-columns: 1fr 1fr; gap:18px; background: #f4f7fa; padding:20px; border-radius:8px; margin-bottom:20px; border: 1px solid #cbd5e1; border-left: 5px solid var(--primary); }
+    .booking-controls label { font-weight: 700; color: var(--primary-light); font-size: 11pt; letter-spacing: 0.5px; }
+    .booking-controls input, .booking-controls select { width: 100%; padding: 11px 12px; border-radius: 6px; border: 1px solid #94a3b8; margin-top: 8px; box-sizing: border-box; font-family: 'Noto Sans TC', sans-serif; font-weight: 500; font-size: 11pt; color: var(--text-dark); background: #fff; }
+    .booking-controls input:focus, .booking-controls select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(38, 78, 112, 0.15); }
+    .locked-input { opacity: 0.7; cursor: not-allowed !important; background-color: #f1f5f9 !important; }
+    .proxy-alert { display:none; background: #fef9e7; color:#9a6700; padding:14px 18px; border-radius:8px; margin-bottom:20px; font-weight:bold; align-items: center; gap: 10px; border: 1px solid #f5d76e; border-left: 5px solid #d4a017; }
+    .daily-board { background: #f4f7fa; border: 1px solid #cbd5e1; border-top: 3px solid var(--primary); padding: 18px 20px; border-radius: 8px; margin-bottom: 20px; }
+    .daily-board h3 { margin: 0 0 12px 0; color: var(--primary-light); font-size: 12.5pt; }
     .daily-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .daily-tag { background: white; border: 2px solid #8bc34a; color: #33691e; padding: 6px 12px; border-radius: 20px; font-size: 10pt; font-weight: bold; }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; table-layout: fixed; background: white; border-radius: 12px; overflow: hidden; border: 2px solid #caf0f8; }
-    th, td { padding: 15px 8px; text-align: center; border-bottom: 1px solid #e0fbfc; border-right: 1px solid #e0fbfc; }
-    th { background: #f1fafa; color: var(--primary); line-height: 1.4; font-weight: 700; font-size: 12pt; border-bottom: 2px solid #caf0f8; } 
+    .daily-tag { background: white; border: 1px solid #6488a8; color: var(--primary-light); padding: 5px 12px; border-radius: 4px; font-size: 10pt; font-weight: bold; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; table-layout: fixed; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #94a3b8; }
+    th, td { padding: 14px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; }
+    th { background: #edf2f7; color: var(--primary-light); line-height: 1.4; font-weight: 700; font-size: 11.5pt; border-bottom: 2px solid #94a3b8; } 
     th:last-child, td:last-child { border-right: none; }
     tr:last-child td { border-bottom: none; }
-    .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shine linear infinite; border-radius:8px; height: 35px; }
+    .skeleton { background: linear-gradient(110deg, #e2e8f0 8%, #f1f5f9 18%, #e2e8f0 33%); background-size: 200% 100%; animation: 1.5s shine linear infinite; border-radius:6px; height: 35px; }
     @keyframes shine { to { background-position-x: -200%; } }
-    .btn-book { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; width: 90%; font-weight: bold; transition: 0.2s; }
-    .btn-book:hover { transform: translateY(-2px); filter: brightness(1.1); }
-    .cell-mine { color: white; font-weight: bold; background: var(--primary); padding: 6px; border: 2px solid var(--primary-light); width: 90%; display:inline-block; border-radius: 8px; }
-    .cell-booked { color: #fff; font-weight: bold; background: var(--danger); padding: 6px; width: 90%; display:inline-block; border-radius: 8px; }
-    .cell-past { background: var(--past); color: #555; border-radius: 8px; padding: 6px; display: inline-block; width: 90%; font-weight: 600; }
-    .cell-restricted { color: #888; font-size: 10pt; background: #f8f9fa; font-weight: 600; border-radius: 8px; padding: 6px; }
-    .admin-panel { background: var(--admin-bg); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px dashed #94d2bd; }
-    .admin-input { flex: 1 1 auto; min-width: 0; padding: 10px 12px; border-radius: 8px; border: 2px solid #94d2bd; font-size: 11pt; box-sizing: border-box; }
+    .btn-book { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; width: 90%; font-weight: bold; transition: 0.2s; letter-spacing: 1px; font-family: 'Noto Sans TC', sans-serif; }
+    .btn-book:hover { background: #216a45; transform: translateY(-1px); }
+    .cell-mine { color: white; font-weight: bold; background: var(--primary); padding: 6px; border: 1px solid var(--primary-light); width: 90%; display:inline-block; border-radius: 6px; }
+    .cell-booked { color: #fff; font-weight: bold; background: var(--danger); padding: 6px; width: 90%; display:inline-block; border-radius: 6px; }
+    .cell-past { background: #e2e8f0; color: #64748b; border-radius: 6px; padding: 6px; display: inline-block; width: 90%; font-weight: 500; }
+    .cell-restricted { color: #64748b; font-size: 10pt; background: #f8fafc; font-weight: 600; border-radius: 6px; padding: 6px; }
+    .admin-panel { background: var(--admin-bg); padding: 18px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #94a3b8; border-left: 5px solid var(--admin-purple); }
+    .admin-input { flex: 1 1 auto; min-width: 0; padding: 10px 12px; border-radius: 6px; border: 1px solid #94a3b8; font-size: 11pt; box-sizing: border-box; font-family: 'Noto Sans TC', sans-serif; }
     .config-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-    .config-card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 2px solid #caf0f8; box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; }
+    .config-card { background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; border-top: 3px solid var(--primary); box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; }
     @media (max-width: 768px) { .config-grid { grid-template-columns: 1fr; } }
-    .btn-admin-active { background: var(--admin-purple); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; flex-shrink: 0; }
-    .btn-admin-inactive { background: white; color: var(--admin-purple); border: 2px solid var(--admin-purple); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    .tabs { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 3px solid #ebfbfb; padding-bottom: 15px; }
-    .tab { padding: 10px 25px; cursor: pointer; border-radius: 30px; font-weight: 700; color: #94a3b8; background: #f8fafc; border: 2px solid #e2e8f0; transition: 0.3s; }
+    .btn-admin-active { background: var(--admin-purple); color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; flex-shrink: 0; transition: 0.2s; }
+    .btn-admin-active:hover { background: var(--primary-light); }
+    .btn-admin-inactive { background: white; color: var(--admin-purple); border: 1px solid var(--admin-purple); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .btn-admin-inactive:hover { background: #e2e8f0; }
+    .tabs { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
+    .tab { padding: 9px 24px; cursor: pointer; border-radius: 6px; font-weight: 700; color: #64748b; background: #f8fafc; border: 1px solid #cbd5e1; transition: 0.25s; }
     .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-    .card { border-left: 8px solid var(--primary); background: #fff; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; border: 1px solid #e0fbfc; }
+    .card { border-left: 6px solid var(--primary); background: #fff; padding: 18px 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
     .card.past { border-left-color: var(--gray); background: #f8fafc; }
     .card.cancelled { border-left-color: var(--danger); background: #fff5f5; }
-    .btn-cancel { background: white; color: var(--danger); border: 2px solid var(--danger); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .btn-cancel { background: white; color: var(--danger); border: 1px solid var(--danger); padding: 7px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
     .btn-cancel:hover { background: var(--danger); color: white; }
-    .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 10pt; font-weight: bold; display: inline-block; }
-    .status-cancelled { background: #ffebee; color: var(--danger); border: 1px solid #ffccd5; }
+    .status-badge { padding: 6px 12px; border-radius: 6px; font-size: 10pt; font-weight: bold; display: inline-block; }
+    .status-cancelled { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
     #initialLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease; }
-    .loader-box { background: white; padding: 35px 45px; border-radius: 20px; box-shadow: 0 15px 40px rgba(18, 130, 162, 0.18); text-align: center; border-top: 8px solid var(--primary); display: flex; flex-direction: column; align-items: center; gap: 15px; }
-    .spinner { width: 50px; height: 50px; border: 5px solid #caf0f8; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    .loader-box { background: white; padding: 35px 45px; border-radius: 10px; box-shadow: 0 12px 35px rgba(27, 54, 93, 0.15); text-align: center; border-top: 6px solid var(--primary); border: 1px solid #cbd5e1; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    .spinner { width: 46px; height: 46px; border: 4px solid #cbd5e1; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loader-text { font-size: 13pt; font-weight: bold; color: var(--primary-light); letter-spacing: 1px; }
-    .loader-subtext { font-size: 10pt; color: #6c757d; }
-    #loginOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:9998; align-items:center; justify-content:center; }
-    .login-wrapper { position: relative; width: 350px; max-width: 90%; }
-    .login-box { background: var(--container-bg); padding: 40px 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(18, 130, 162, 0.2); text-align: center; position: relative; z-index: 10; border-top: 8px solid var(--primary); }
-    .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 25px; font-size: 1.8rem; }
-    .login-input { width: 100%; padding: 14px; border: 2px solid #caf0f8; border-radius: 10px; box-sizing: border-box; font-size: 11pt; font-family: 'Nunito', sans-serif; font-weight: 600; color: var(--text-dark); }
-    .login-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(18, 130, 162, 0.2); }
-    .btn-login { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 13pt; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(18, 130, 162, 0.3); letter-spacing: 1px; }
-    .btn-login:hover { background: var(--primary-light); transform: translateY(-2px); }
-    #alertOverlay, #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:100000 !important; backdrop-filter: blur(3px); }
-    #alertModal, #modal, #customModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:20px; z-index:100001 !important; width:320px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; border-top: 8px solid var(--danger); }
+    .loader-text { font-size: 13pt; font-weight: bold; color: var(--primary-light); letter-spacing: 1.5px; font-family: 'Noto Serif TC', serif; }
+    .loader-subtext { font-size: 10pt; color: #64748b; }
+    #loginOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); background-image: radial-gradient(#d5e0ec 1px, transparent 1px); background-size: 20px 20px; z-index:9998; align-items:center; justify-content:center; }
+    .login-wrapper { position: relative; width: 370px; max-width: 90%; }
+    .login-box { background: var(--container-bg); padding: 38px 32px; border-radius: 10px; box-shadow: 0 15px 40px rgba(27, 54, 93, 0.18); text-align: center; position: relative; z-index: 10; border: 1px solid #cbd5e1; border-top: 8px solid var(--primary-light); }
+    .login-box h2 { color: var(--primary-light); margin-top: 0; margin-bottom: 8px; font-size: 1.65rem; letter-spacing: 2px; }
+    .login-subtitle { color: #64748b; font-size: 9.5pt; margin-bottom: 24px; letter-spacing: 1px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
+    .login-input { width: 100%; padding: 13px; border: 1px solid #94a3b8; border-radius: 6px; box-sizing: border-box; font-size: 11pt; font-family: 'Noto Sans TC', sans-serif; font-weight: 500; color: var(--text-dark); background: #fff; }
+    .login-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(38, 78, 112, 0.15); }
+    .btn-login { width: 100%; background: var(--primary-light); color: white; border: none; padding: 13px; border-radius: 6px; font-weight: bold; font-size: 12pt; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(27, 54, 93, 0.25); letter-spacing: 2px; font-family: 'Noto Sans TC', sans-serif; }
+    .btn-login:hover { background: var(--primary); transform: translateY(-1px); }
+    #alertOverlay, #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.55); z-index:100000 !important; backdrop-filter: blur(2px); }
+    #alertModal, #modal, #customModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:28px; border-radius:10px; z-index:100001 !important; width:330px; box-shadow: 0 20px 45px rgba(0,0,0,0.25); text-align: center; border: 1px solid #cbd5e1; border-top: 6px solid var(--danger); }
     #modal { border-top-color: var(--primary); }
     #customModal { border-top-color: var(--admin-purple); }
-    #alertMessage { font-size: 12pt; font-weight: 700; color: #333; line-height: 1.6; margin-bottom: 20px; white-space: pre-wrap; }
-    .btn-alert { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; font-size: 12pt; box-shadow: 0 4px 10px rgba(18, 130, 162, 0.3); }
-    .confirm-btns { display: flex; gap: 15px; margin-top: 20px; }
-    .btn-cancel-modal, .btn-confirm-modal { padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; transition: 0.2s; border: none; font-size: 11pt; }
-    .btn-cancel-modal { background: #f1f5f9; color: #64748b; }
-    .btn-confirm-modal { background: var(--danger); color: white; box-shadow: 0 4px 10px rgba(217, 4, 41, 0.3); }
-    .modal-input { width: 100%; box-sizing: border-box; padding: 12px; margin-top: 8px; margin-bottom: 20px; border: 2px solid #caf0f8; border-radius: 8px; font-size: 11pt; font-weight: 600; color: var(--primary); }
-    .modal-input-admin { border-color: #94d2bd; color: var(--admin-purple); }
-    .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #94d2bd; padding-bottom: 10px; overflow-x: auto; white-space: nowrap; }
-    .admin-tab { padding: 10px 20px; cursor: pointer; border-radius: 8px; font-weight: bold; background: #ebfbfb; color: var(--admin-purple); transition: 0.2s; }
-    .admin-tab.active { background: var(--admin-purple); color: white; }
-    .admin-card { border-left: 5px solid var(--admin-purple); background: #fff; padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: block; }
-    .key-group { display: flex; gap: 5px; margin-top: 10px; }
-    .key-btn { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; font-size: 10pt; font-weight: bold; background: white; color: #666; transition: 0.2s; }
+    #alertMessage { font-size: 11.5pt; font-weight: 700; color: var(--text-dark); line-height: 1.6; margin-bottom: 20px; white-space: pre-wrap; }
+    .btn-alert { background: var(--primary); color: white; border: none; padding: 11px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 12px; width: 100%; font-size: 11.5pt; }
+    .confirm-btns { display: flex; gap: 12px; margin-top: 20px; }
+    .btn-cancel-modal, .btn-confirm-modal { padding: 11px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; transition: 0.2s; border: none; font-size: 11pt; }
+    .btn-cancel-modal { background: #e2e8f0; color: #475569; }
+    .btn-confirm-modal { background: var(--danger); color: white; }
+    .modal-input { width: 100%; box-sizing: border-box; padding: 11px; margin-top: 8px; margin-bottom: 18px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 11pt; font-weight: 500; color: var(--text-dark); font-family: 'Noto Sans TC', sans-serif; }
+    .modal-input-admin { border-color: #6488a8; color: var(--admin-purple); }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px; overflow-x: auto; white-space: nowrap; }
+    .admin-tab { padding: 9px 18px; cursor: pointer; border-radius: 6px; font-weight: bold; background: #f1f5f9; color: var(--admin-purple); border: 1px solid #cbd5e1; transition: 0.2s; }
+    .admin-tab.active { background: var(--admin-purple); color: white; border-color: var(--admin-purple); }
+    .admin-card { border-left: 5px solid var(--admin-purple); background: #fff; padding: 15px 18px; margin-bottom: 12px; border-radius: 6px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: block; }
+    .key-group { display: flex; gap: 6px; margin-top: 10px; }
+    .key-btn { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer; font-size: 10pt; font-weight: bold; background: white; color: #475569; transition: 0.2s; }
     .key-btn.active-unlent { background: var(--gray); color: white; border-color: var(--gray); }
     .key-btn.active-lent { background: var(--danger); color: white; border-color: var(--danger); }
     .key-btn.active-returned { background: var(--success); color: white; border-color: var(--success); }
     .form-row { margin-bottom: 18px; text-align: left; }
-    .form-row label.title { display: block; font-weight: bold; margin-bottom: 8px; color: #444; font-size: 11pt; }
-    .form-row input[type="date"], .form-row input[type="text"], .form-row select { width: 100%; padding: 10px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 11pt; }
+    .form-row label.title { display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary-light); font-size: 11pt; }
+    .form-row input[type="date"], .form-row input[type="text"], .form-row select { width: 100%; padding: 10px; box-sizing: border-box; border-radius: 6px; border: 1px solid #94a3b8; font-size: 11pt; }
     .date-group { display: flex; gap: 10px; align-items: center; }
-    .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-    .check-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
-    .btn-submit { width: 100%; padding: 14px; background: var(--admin-purple); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 12pt; cursor: pointer; transition: 0.2s; }
+    .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; }
+    .check-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .btn-submit { width: 100%; padding: 13px; background: var(--admin-purple); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 11.5pt; cursor: pointer; transition: 0.2s; letter-spacing: 1px; }
+    .btn-submit:hover { background: var(--primary-light); }
   </style>
 </head>
 <body>
@@ -131,41 +171,135 @@
   <div class="loader-box">
     <div class="spinner"></div>
     <div class="loader-text">系統載入中...</div>
-    <div class="loader-subtext">正在連線至雲端資料庫，請稍候 💻</div>
+    <div class="loader-subtext">正在連線至雲端資料庫，請稍候 🍵</div>
   </div>
 </div>
 
-<div class="bg-illustration" style="top: 8%; left: 5%; width: 110px; height: 150px;">
-  <svg viewBox="0 0 120 160" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="140" rx="10" fill="#2d3748"/><rect x="15" y="20" width="90" height="120" fill="#f8fafc"/><rect x="40" y="40" width="40" height="40" rx="8" fill="#38b2ac" opacity="0.8"/><rect x="40" y="90" width="40" height="10" rx="4" fill="#a0aec0" opacity="0.6"/><circle cx="60" cy="148" r="4" fill="#cbd5e0"/></svg>
+<!-- 日式藍染風格背景插圖：專科教室與校園大廣場 -->
+<!-- 左上：教室（黑板、講台與窗景） -->
+<div class="bg-illustration" style="top: 6%; left: 3%; width: 150px; height: 140px;">
+  <svg viewBox="0 0 160 140" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="15" width="140" height="110" rx="8" fill="#e2ecf5" stroke="#264e70" stroke-width="3"/>
+    <!-- 教室黑板 -->
+    <rect x="24" y="28" width="82" height="50" rx="3" fill="#1b365d" stroke="#c5a059" stroke-width="2.5"/>
+    <line x1="34" y1="43" x2="72" y2="43" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+    <line x1="34" y1="55" x2="60" y2="55" stroke="#cbd5e1" stroke-width="2" opacity="0.7"/>
+    <rect x="78" y="69" width="14" height="4" fill="#c5a059"/>
+    <!-- 教室格子窗 -->
+    <rect x="114" y="28" width="24" height="50" fill="#f8fafc" stroke="#264e70" stroke-width="2"/>
+    <line x1="126" y1="28" x2="126" y2="78" stroke="#264e70" stroke-width="1.5"/>
+    <line x1="114" y1="53" x2="138" y2="53" stroke="#264e70" stroke-width="1.5"/>
+    <!-- 講台與課桌 -->
+    <rect x="48" y="88" width="44" height="26" rx="2" fill="#264e70"/>
+    <rect x="44" y="85" width="52" height="5" rx="1.5" fill="#c5a059"/>
+    <rect x="18" y="102" width="22" height="16" rx="1.5" fill="#5c82a6"/>
+    <rect x="100" y="102" width="22" height="16" rx="1.5" fill="#5c82a6"/>
+  </svg>
 </div>
-<div class="bg-illustration" style="top: 15%; right: 8%; width: 150px; height: 110px; transform: rotate(15deg);">
-  <svg viewBox="0 0 160 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="140" height="100" rx="8" fill="#f1f5f9"/><rect x="15" y="15" width="130" height="90" fill="#0077b6"/><rect x="25" y="25" width="15" height="15" rx="3" fill="#ffffff"/><rect x="50" y="25" width="15" height="15" rx="3" fill="#ff4d6d"/><rect x="75" y="25" width="15" height="15" rx="3" fill="#06d6a0"/><rect x="100" y="25" width="15" height="15" rx="3" fill="#ffd166"/><line x1="10" y1="60" x2="15" y2="60" stroke="#94a3b8" stroke-width="2"/></svg>
+
+<!-- 右上：校園大廣場（中央鐘樓、校舍與廣場磚道） -->
+<div class="bg-illustration" style="top: 8%; right: 3%; width: 155px; height: 145px;">
+  <svg viewBox="0 0 160 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="75" r="66" fill="#e2ecf5" stroke="#264e70" stroke-width="3"/>
+    <!-- 校舍與屋頂 -->
+    <polygon points="80,22 48,46 112,46" fill="#1b365d"/>
+    <rect x="34" y="46" width="92" height="44" fill="#ffffff" stroke="#264e70" stroke-width="2.5"/>
+    <!-- 廣場大鐘 -->
+    <circle cx="80" cy="60" r="9" fill="#f8fafc" stroke="#c5a059" stroke-width="2.5"/>
+    <polyline points="80,55 80,60 84,60" fill="none" stroke="#1b365d" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- 校舍窗戶與大門 -->
+    <rect x="44" y="54" width="12" height="12" fill="#5c82a6"/>
+    <rect x="104" y="54" width="12" height="12" fill="#5c82a6"/>
+    <rect x="72" y="74" width="16" height="16" fill="#264e70"/>
+    <!-- 大廣場開闊步道與樹木 -->
+    <polygon points="58,90 102,90 132,128 28,128" fill="#5c82a6" opacity="0.45"/>
+    <line x1="80" y1="90" x2="80" y2="128" stroke="#264e70" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="46" y1="108" x2="114" y2="108" stroke="#264e70" stroke-width="1.5"/>
+    <circle cx="34" cy="84" r="10" fill="#264e70"/>
+    <rect x="32.5" y="92" width="3" height="8" fill="#1b365d"/>
+    <circle cx="126" cy="84" r="10" fill="#264e70"/>
+    <rect x="124.5" y="92" width="3" height="8" fill="#1b365d"/>
+  </svg>
 </div>
-<div class="bg-illustration" style="bottom: 12%; left: 8%; width: 140px; height: 140px; transform: rotate(-10deg);">
-  <svg viewBox="0 0 160 160" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="20" width="100" height="120" rx="6" fill="#0096c7"/><rect x="35" y="25" width="90" height="110" fill="#ffffff"/><circle cx="70" cy="60" r="25" fill="#ef476f" opacity="0.8"/><circle cx="90" cy="90" r="30" fill="#118ab2" opacity="0.7"/><path d="M 120 40 L 70 110" stroke="#023e8a" stroke-width="6" stroke-linecap="round"/><ellipse cx="123" cy="36" rx="4" ry="6" fill="#023e8a" transform="rotate(35 123 36)"/></svg>
+
+<!-- 左下：大廣場噴水池與綠樹 -->
+<div class="bg-illustration" style="bottom: 8%; left: 3%; width: 150px; height: 130px;">
+  <svg viewBox="0 0 160 130" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <!-- 廣場遠景迴廊 -->
+    <rect x="20" y="36" width="120" height="6" fill="#264e70"/>
+    <line x1="35" y1="42" x2="35" y2="75" stroke="#264e70" stroke-width="3"/>
+    <line x1="65" y1="42" x2="65" y2="75" stroke="#264e70" stroke-width="3"/>
+    <line x1="95" y1="42" x2="95" y2="75" stroke="#264e70" stroke-width="3"/>
+    <line x1="125" y1="42" x2="125" y2="75" stroke="#264e70" stroke-width="3"/>
+    <!-- 廣場地面與噴水池 -->
+    <ellipse cx="80" cy="95" rx="68" ry="22" fill="#e2ecf5" stroke="#264e70" stroke-width="2.5"/>
+    <ellipse cx="80" cy="92" rx="36" ry="11" fill="#5c82a6" stroke="#1b365d" stroke-width="2"/>
+    <path d="M 80 88 Q 70 65 58 76" fill="none" stroke="#264e70" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M 80 88 Q 90 65 102 76" fill="none" stroke="#264e70" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="80" y1="88" x2="80" y2="60" stroke="#c5a059" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
 </div>
-<div class="bg-illustration" style="bottom: 18%; right: 6%; width: 150px; height: 110px;">
-  <svg viewBox="0 0 160 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><polygon points="10,110 30,30 150,30 130,110" fill="#03045e"/><rect x="25" y="35" width="115" height="70" rx="3" fill="#fca311" transform="skewX(-14)"/><rect x="50" y="45" width="60" height="40" rx="2" fill="#ffffff" transform="skewX(-14)"/><path d="M 60 70 Q 75 45 90 70 T 110 50" fill="none" stroke="#14213d" stroke-width="3" stroke-linecap="round" transform="skewX(-14)"/><line x1="140" y1="20" x2="105" y2="75" stroke="#e5e5e5" stroke-width="5" stroke-linecap="round"/><rect x="35" y="90" width="8" height="8" rx="2" fill="#00b4d8" transform="skewX(-14)"/><rect x="48" y="90" width="8" height="8" rx="2" fill="#ef233c" transform="skewX(-14)"/><rect x="61" y="90" width="8" height="8" rx="2" fill="#ffb703" transform="skewX(-14)"/></svg>
+
+<!-- 右下：專科教室課桌椅與投影設備 -->
+<div class="bg-illustration" style="bottom: 8%; right: 3%; width: 150px; height: 130px;">
+  <svg viewBox="0 0 160 130" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <!-- 投影布幕 -->
+    <rect x="25" y="14" width="110" height="62" rx="4" fill="#ffffff" stroke="#1b365d" stroke-width="3"/>
+    <rect x="20" y="10" width="120" height="6" rx="2" fill="#c5a059"/>
+    <line x1="42" y1="32" x2="95" y2="32" stroke="#264e70" stroke-width="3"/>
+    <line x1="42" y1="45" x2="115" y2="45" stroke="#5c82a6" stroke-width="2.5"/>
+    <line x1="42" y1="58" x2="80" y2="58" stroke="#5c82a6" stroke-width="2.5"/>
+    <!-- 整齊課桌 -->
+    <rect x="22" y="90" width="50" height="8" rx="2" fill="#264e70"/>
+    <line x1="30" y1="98" x2="30" y2="118" stroke="#1b365d" stroke-width="3"/>
+    <line x1="64" y1="98" x2="64" y2="118" stroke="#1b365d" stroke-width="3"/>
+    <rect x="88" y="90" width="50" height="8" rx="2" fill="#264e70"/>
+    <line x1="96" y1="98" x2="96" y2="118" stroke="#1b365d" stroke-width="3"/>
+    <line x1="130" y1="98" x2="130" y2="118" stroke="#1b365d" stroke-width="3"/>
+    <!-- 桌上平板與書本 -->
+    <rect x="38" y="82" width="18" height="8" rx="1.5" fill="#c5a059"/>
+    <rect x="104" y="82" width="18" height="8" rx="1.5" fill="#c5a059"/>
+  </svg>
 </div>
 
 <div id="loginOverlay">
-  <div class="bg-illustration" style="top: 10%; left: 10%; width: 150px; height: 150px;"><svg viewBox="0 0 160 160" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="20" width="100" height="120" rx="6" fill="#0096c7"/><rect x="35" y="25" width="90" height="110" fill="#ffffff"/><circle cx="70" cy="60" r="25" fill="#ef476f" opacity="0.8"/><circle cx="90" cy="90" r="30" fill="#118ab2" opacity="0.7"/><path d="M 120 40 L 70 110" stroke="#023e8a" stroke-width="6" stroke-linecap="round"/></svg></div>
-  <div class="bg-illustration" style="bottom: 15%; right: 10%; width: 140px; height: 140px; transform: rotate(-20deg);"><svg viewBox="0 0 120 160" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="140" rx="8" fill="#2d3748"/><rect x="15" y="20" width="90" height="120" fill="#f8fafc"/><circle cx="60" cy="70" r="30" fill="#38b2ac" opacity="0.6"/><circle cx="80" cy="90" r="25" fill="#ed8936" opacity="0.6"/><circle cx="40" cy="100" r="20" fill="#ecc94b" opacity="0.6"/></svg></div>
+  <!-- 登入畫面左上：教室黑板與課桌 -->
+  <div class="bg-illustration" style="top: 10%; left: 7%; width: 145px; height: 135px;">
+    <svg viewBox="0 0 160 140" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="15" width="140" height="110" rx="8" fill="#e2ecf5" stroke="#264e70" stroke-width="3"/>
+      <rect x="26" y="28" width="108" height="54" rx="3" fill="#1b365d" stroke="#c5a059" stroke-width="2.5"/>
+      <line x1="40" y1="46" x2="96" y2="46" stroke="#ffffff" stroke-width="2.5" opacity="0.85"/>
+      <line x1="40" y1="60" x2="76" y2="60" stroke="#cbd5e1" stroke-width="2" opacity="0.75"/>
+      <rect x="52" y="92" width="56" height="24" rx="2" fill="#264e70"/>
+      <rect x="48" y="88" width="64" height="5" rx="1.5" fill="#c5a059"/>
+    </svg>
+  </div>
+  <!-- 登入畫面右下：校園大廣場 -->
+  <div class="bg-illustration" style="bottom: 10%; right: 7%; width: 150px; height: 140px;">
+    <svg viewBox="0 0 160 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="80" cy="75" r="64" fill="#e2ecf5" stroke="#264e70" stroke-width="3"/>
+      <polygon points="80,24 48,48 112,48" fill="#1b365d"/>
+      <rect x="36" y="48" width="88" height="42" fill="#ffffff" stroke="#264e70" stroke-width="2.5"/>
+      <circle cx="80" cy="62" r="8" fill="#f8fafc" stroke="#c5a059" stroke-width="2.5"/>
+      <polygon points="58,90 102,90 130,126 30,126" fill="#5c82a6" opacity="0.5"/>
+    </svg>
+  </div>
 
   <div class="login-wrapper">
     <div class="login-box">
-      <h2>設備預約登入</h2>
+      <h2>設備預約系統</h2>
+      <div class="login-subtitle">教學設備與專科教室借用平台</div>
       <label for="loginNameSelect" style="display:none;">選擇您的姓名</label>
       <select id="loginNameSelect" class="login-input" style="margin-bottom: 15px;" aria-label="選擇您的姓名" autocomplete="username">
         <option value="">載入名單中...</option>
       </select>
       <label for="loginPinInput" style="display:none;">請輸入密碼</label>
-      <input type="password" id="loginPinInput" class="login-input" placeholder="請輸入密碼" style="margin-bottom: 10px;" aria-label="請輸入密碼" autocomplete="current-password">
-      <div style="font-size: 10pt; color: #555; text-align: left; margin-bottom: 25px; line-height: 1.5; background: #e0fbfc; padding: 12px; border-radius: 10px; border: 2px dashed #caf0f8; font-weight: 600;">
+      <input type="password" id="loginPinInput" class="login-input" placeholder="請輸入登入密碼" style="margin-bottom: 12px;" aria-label="請輸入密碼" autocomplete="current-password">
+      <div style="font-size: 10pt; color: #334155; text-align: left; margin-bottom: 22px; line-height: 1.6; background: #f1f5f9; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--primary); font-weight: 500;">
         💡 請選擇您的姓名，並輸入密碼登入。<br>
-        <span style="font-size: 9pt; color: #888;">(若無特別修改，預設密碼通常為帳號前綴)</span>
+        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴或 123456)</span>
       </div>
-      <button id="btnLoginSubmit" class="btn-login" onclick="window.doLogin()">Login 登入</button>
+      <button id="btnLoginSubmit" class="btn-login" onclick="window.doLogin()">登入系統</button>
     </div>
   </div>
 </div>
@@ -175,7 +309,7 @@
     <div class="wavy-top"></div>
     <div class="main-content">
       <div class="app-header">
-        <h1 class="app-title">Ipad Equipment 💻</h1>
+        <h1 class="app-title">🍵 場地使用預約</h1>
         <div class="header-user">
           <span id="displayUserName">使用者</span>
           <button class="btn-logout" onclick="window.doLogout(false)">登出</button>
@@ -187,82 +321,78 @@
         </div>
       </div>
 
+      <!-- 代理模式橫幅 -->
       <div id="proxyAlert" class="proxy-alert">
-        <span style="font-size: 1.5rem;">🔄</span>
-        <span><b>代理模式：</b>您正以「<span id="proxyCurrentName" style="color:#d35400; text-decoration:underline;"></span>」身分操作。</span>
+        <span>🕵️ 目前為「代客操作模式」，身分為：<b id="proxyCurrentName" style="text-decoration:underline;"></b></span>
+        <button onclick="window.resetUserProxy()" style="margin-left:auto; background:#d4a017; color:white; border:none; padding:5px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">結束代理</button>
       </div>
 
+      <!-- 頁籤 1：我要預約 -->
       <div id="view-booking" class="view-section active">
         <div id="adminPanel" class="admin-panel" style="display:none;">
-          <h3>👨‍💻 代客預約 / 身分切換</h3>
-          <div class="admin-controls" style="display:flex; gap:10px;">
-            <label for="adminSwitchName" style="display:none;">選擇要切換代理的使用者</label>
-            <select id="adminSwitchName" class="admin-input" aria-label="選擇要切換代理的使用者"></select>
-            <button id="btnSwitch" class="btn-admin-active" onclick="window.switchUserProxy()">切換</button>
-            <button id="btnReset" class="btn-admin-inactive" onclick="window.resetUserProxy()">還原本人</button>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <label for="adminSwitchName" style="font-weight:bold; color:var(--admin-purple);">👨‍💻 管理員代客預約：</label>
+            <select id="adminSwitchName" class="admin-input" style="max-width:220px;" onchange="window.switchUserProxy()"></select>
+            <span style="font-size:9.5pt; color:#64748b;">(切換後可直接代替該老師進行預約或取消)</span>
           </div>
         </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-          <h2 style="margin:0;">選擇借用時段 <span id="syncTag" style="font-size:11pt; color:var(--primary); font-weight:bold;"></span></h2>
-        </div>
-
-        <div id="dailyBoard" class="daily-board" style="display:none;"></div>
 
         <div class="booking-controls">
           <div>
-            <label for="targetDate">📅 借用日期</label>
+            <label for="targetDate">📅 借用日期 <span id="syncTag" style="font-size:9.5pt; color:var(--accent-blue); font-weight:normal;"></span></label>
             <input type="date" id="targetDate" onchange="window.refreshBooking()">
           </div>
           <div>
-            <label for="itemSelect">💻 選擇設備/教室</label>
+            <label for="itemSelect">💻 選擇場地</label>
             <select id="itemSelect" onchange="window.refreshBooking()"></select>
           </div>
         </div>
+
+        <div id="dailyBoard" class="daily-board" style="display:none;"></div>
         <div id="tableBox" style="overflow-x:auto;"></div>
       </div>
 
+      <!-- 頁籤 2：我的紀錄 -->
       <div id="view-myrecords" class="view-section">
-        <h2 style="margin-top: 0; margin-bottom: 25px;">預約清單</h2>
         <div class="tabs">
-          <div id="tab-upcoming" class="tab active" onclick="window.switchSubTab('upcoming')">即將到來</div>
-          <div id="tab-past" class="tab" onclick="window.switchSubTab('past')">歷史紀錄</div>
+          <div id="tab-upcoming" class="tab active" onclick="window.switchSubTab('upcoming')">⏳ 即將到來</div>
+          <div id="tab-past" class="tab" onclick="window.switchSubTab('past')">📁 歷史與已取消</div>
         </div>
         <div id="list-upcoming"></div>
-        <div id="list-past" style="display: none;"></div>
+        <div id="list-past" style="display:none;"></div>
       </div>
 
+      <!-- 頁籤 3：管理後台 -->
       <div id="view-admin" class="view-section">
-        <h2 style="color:var(--admin-purple); margin-top:0;">👨‍💻 管理員看板</h2>
         <div class="admin-tabs">
-          <div id="admin-t1" class="admin-tab active" onclick="window.switchAdminTab(1)">每日借用動態</div>
-          <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">⚙️ 批次禁借設定</div>
-          <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 統計圖表</div>
-          <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號管理</div>
-          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 設備、班級與節次設定</div>
+          <div id="admin-t1" class="admin-tab active" onclick="window.switchAdminTab(1)">📋 每日借用與鑰匙狀態</div>
+          <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">🔒 批次禁借設定</div>
+          <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 借用統計圖表</div>
+          <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號與權限管理</div>
+          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 場地、班級與節次設定</div>
         </div>
 
         <div id="admin-page1">
-          <div style="background:#e0fbfc; padding:20px; border-radius:12px; margin-bottom:15px; display:flex; gap:15px; align-items:center;">
-            <label for="adminDate" style="font-weight:bold;">📅 查看日期</label>
-            <input type="date" id="adminDate" onchange="window.loadAdminDaily()" style="padding:10px; border-radius:8px; border:1px solid #94d2bd; flex-grow:1; max-width:250px;">
+          <div style="margin-bottom:15px; display:flex; align-items:center; gap:10px; background:#f8fafc; padding:12px 16px; border-radius:8px; border:1px solid #cbd5e1;">
+            <label for="adminDate" style="font-weight:bold; color:var(--admin-purple);">📅 查詢日期：</label>
+            <input type="date" id="adminDate" class="admin-input" style="max-width:200px;" onchange="window.loadAdminDaily()">
           </div>
           <div id="adminDailyList"></div>
         </div>
 
         <div id="admin-page2" style="display:none;">
           <div class="form-row">
-            <label class="title" for="resItem">🚫 選擇禁借設備/教室</label>
-            <select id="resItem" class="admin-input"></select>
+            <label class="title" for="resItem">💻 選擇禁借場地</label>
+            <select id="resItem"></select>
           </div>
           <div class="form-row">
-            <div class="title" id="resDateGroupLabel">📅 影響日期範圍</div>
-            <div class="date-group" aria-labelledby="resDateGroupLabel">
-              <label for="resStartDate" style="display:none;">禁借開始日期</label>
-              <input type="date" id="resStartDate" class="admin-input" aria-label="禁借開始日期"> 
-              <span style="font-weight:bold; color:#777;">至</span> 
-              <label for="resEndDate" style="display:none;">禁借結束日期</label>
-              <input type="date" id="resEndDate" class="admin-input" aria-label="禁借結束日期">
+            <div class="title" style="font-weight: bold; margin-bottom: 8px; color: var(--primary-light); font-size: 11pt;">📅 日期範圍</div>
+            <div class="date-group">
+              <label for="resStartDate" style="display:none;">開始日期</label>
+              <input type="date" id="resStartDate" aria-label="開始日期">
+              <span>至</span>
+              <label for="resEndDate" style="display:none;">結束日期</label>
+              <input type="date" id="resEndDate" aria-label="結束日期">
             </div>
           </div>
           <div class="form-row">
@@ -314,10 +444,10 @@
         <div id="admin-page5" style="display:none;">
           <div class="config-grid">
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 場地清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
-                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新設備或教室名稱..." aria-label="輸入新設備或教室名稱">
+                <label for="newItemInput" style="display:none;">輸入新場地名稱</label>
+                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新場地名稱..." aria-label="輸入新場地名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="itemsListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
@@ -409,6 +539,8 @@ const firebaseConfig = {
   appId: "1:120933626729:web:8f34dd531ca8cf29f7c3f8"
 };
 
+
+  const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : fallbackConfig;
   const appId = typeof __app_id !== 'undefined' ? __app_id : 'school-booking-app-v3';
 
   let app, db, auth, userId;

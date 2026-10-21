@@ -369,7 +369,7 @@
           <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">🔒 批次禁借設定</div>
           <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 借用統計圖表</div>
           <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號與權限管理</div>
-          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 設備、班級與節次設定</div>
+          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 場地、班級與節次設定</div>
           <div id="admin-t6" class="admin-tab" onclick="window.switchAdminTab(6)">📑 每月預約報表</div>
         </div>
 
@@ -383,7 +383,7 @@
 
         <div id="admin-page2" style="display:none;">
           <div class="form-row">
-            <label class="title" for="resItem">💻 選擇禁借設備 / 教室</label>
+            <label class="title" for="resItem">💻 選擇禁借場地</label>
             <select id="resItem"></select>
           </div>
           <div class="form-row">
@@ -445,20 +445,20 @@
         <div id="admin-page5" style="display:none;">
           <div class="config-grid">
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 場地清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
-                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新設備或教室名稱..." aria-label="輸入新設備或教室名稱">
+                <label for="newItemInput" style="display:none;">輸入新場地名稱</label>
+                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新場地名稱..." aria-label="輸入新場地名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="itemsListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
             </div>
 
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 班級清單設定</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 學年清單設定</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newClassInput" style="display:none;">輸入新班級名稱</label>
-                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新班級 (如: 401、科任)..." aria-label="輸入新班級名稱">
+                <label for="newClassInput" style="display:none;">輸入學年名稱</label>
+                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入學年 (如: 401、科任)..." aria-label="輸入學年名稱">
                 <button class="btn-admin-active" onclick="window.addClassConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="classesListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
@@ -491,9 +491,9 @@
               <input type="month" id="reportMonth" class="admin-input" style="max-width:170px;" onchange="window.loadMonthlyReport()">
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 設備篩選：</label>
+              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 場地篩選：</label>
               <select id="reportItemFilter" class="admin-input" style="max-width:220px;" onchange="window.loadMonthlyReport()">
-                <option value="ALL">全部設備 / 專科教室</option>
+                <option value="ALL">全部場地</option>
               </select>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -525,11 +525,11 @@
   <input type="text" id="userName" class="modal-input" readonly style="background:#f1f5f9; color:#64748b; border-style: dashed;">
   <label for="purposeType" style="font-size: 11pt; font-weight:bold; color: var(--primary);">📝 用途</label>
   <select id="purposeType" class="modal-input" onchange="window.togglePurpose()">
-    <option value="class">班級使用</option><option value="other">其他用途</option>
+    <option value="class">學年使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv">
-    <label for="classSelect" style="display:none;">選擇使用班級</label>
-    <select id="classSelect" class="modal-input" aria-label="選擇使用班級"></select>
+    <label for="classSelect" style="display:none;">選擇使用學年</label>
+    <select id="classSelect" class="modal-input" aria-label="選擇使用學年"></select>
   </div>
   <div id="otherDiv" style="display:none;">
     <label for="otherPurpose" style="display:none;">請輸入其他用途</label>

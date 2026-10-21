@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>長安場地使用系統</title>
+  <title>教學設備與專科教室借用系統</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
@@ -287,8 +287,8 @@
 
   <div class="login-wrapper">
     <div class="login-box">
-      <h2>長安場地預約系統</h2>
-      <div class="login-subtitle">場地借用平台</div>
+      <h2>設備預約系統</h2>
+      <div class="login-subtitle">教學設備與專科教室借用平台</div>
       <label for="loginNameSelect" style="display:none;">選擇您的姓名</label>
       <select id="loginNameSelect" class="login-input" style="margin-bottom: 15px;" aria-label="選擇您的姓名" autocomplete="username">
         <option value="">載入名單中...</option>
@@ -297,7 +297,7 @@
       <input type="password" id="loginPinInput" class="login-input" placeholder="請輸入登入密碼" style="margin-bottom: 12px;" aria-label="請輸入密碼" autocomplete="current-password">
       <div style="font-size: 10pt; color: #334155; text-align: left; margin-bottom: 22px; line-height: 1.6; background: #f1f5f9; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--primary); font-weight: 500;">
         💡 請選擇您的姓名，並輸入密碼登入。<br>
-        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴)</span>
+        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴或 123456)</span>
       </div>
       <button id="btnLoginSubmit" class="btn-login" onclick="window.doLogin()">登入系統</button>
     </div>
@@ -309,7 +309,7 @@
     <div class="wavy-top"></div>
     <div class="main-content">
       <div class="app-header">
-        <h1 class="app-title">🍵 校慶進場練習場地預約</h1>
+        <h1 class="app-title">🍵 教學設備與專科教室預約</h1>
         <div class="header-user">
           <span id="displayUserName">使用者</span>
           <button class="btn-logout" onclick="window.doLogout(false)">登出</button>
@@ -343,7 +343,7 @@
             <input type="date" id="targetDate" onchange="window.refreshBooking()">
           </div>
           <div>
-            <label for="itemSelect">💻 選擇場地</label>
+            <label for="itemSelect">💻 選擇設備 / 專科教室</label>
             <select id="itemSelect" onchange="window.refreshBooking()"></select>
           </div>
         </div>
@@ -369,7 +369,7 @@
           <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">🔒 批次禁借設定</div>
           <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 借用統計圖表</div>
           <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號與權限管理</div>
-          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 場地、班級與節次設定</div>
+          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 設備、班級與節次設定</div>
           <div id="admin-t6" class="admin-tab" onclick="window.switchAdminTab(6)">📑 每月預約報表</div>
         </div>
 
@@ -383,7 +383,7 @@
 
         <div id="admin-page2" style="display:none;">
           <div class="form-row">
-            <label class="title" for="resItem">💻 選擇禁借場地</label>
+            <label class="title" for="resItem">💻 選擇禁借設備 / 教室</label>
             <select id="resItem"></select>
           </div>
           <div class="form-row">
@@ -437,7 +437,7 @@
              </label>
           </div>
           <div style="font-size: 10pt; color: #78909c; margin-bottom: 10px; line-height: 1.5;">
-             ※ 批次匯入 Excel 支援多種欄位名稱：系統會自動尋找 <b>「姓名」</b> 欄位。密碼則會尋找 <b>「密碼」</b> 。若包含 <b>「權限」</b> 欄位且內容為 "管理員"，則該帳號具備後台權限。
+             ※ 批次匯入 Excel 支援多種欄位名稱：系統會自動尋找 <b>「姓名」</b> 欄位。密碼則會尋找 <b>「密碼」</b> 或預設為 123456。若包含 <b>「權限」</b> 欄位且內容為 "管理員"，則該帳號具備後台權限。
           </div>
           <div id="userTableContainer" style="overflow-x:auto;"></div>
         </div>
@@ -445,20 +445,20 @@
         <div id="admin-page5" style="display:none;">
           <div class="config-grid">
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 場地清單</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newItemInput" style="display:none;">輸入新場地名稱</label>
-                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新場地名稱..." aria-label="輸入新場地名稱">
+                <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
+                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新設備或教室名稱..." aria-label="輸入新設備或教室名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="itemsListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
             </div>
 
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 學年清單設定</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 班級清單設定</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newClassInput" style="display:none;">輸入學年名稱</label>
-                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入學年 (如: 401、科任)..." aria-label="輸入學年名稱">
+                <label for="newClassInput" style="display:none;">輸入新班級名稱</label>
+                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新班級 (如: 401、科任)..." aria-label="輸入新班級名稱">
                 <button class="btn-admin-active" onclick="window.addClassConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="classesListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
@@ -491,9 +491,9 @@
               <input type="month" id="reportMonth" class="admin-input" style="max-width:170px;" onchange="window.loadMonthlyReport()">
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 場地篩選：</label>
+              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 設備篩選：</label>
               <select id="reportItemFilter" class="admin-input" style="max-width:220px;" onchange="window.loadMonthlyReport()">
-                <option value="ALL">全部場地</option>
+                <option value="ALL">全部設備 / 專科教室</option>
               </select>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -525,11 +525,11 @@
   <input type="text" id="userName" class="modal-input" readonly style="background:#f1f5f9; color:#64748b; border-style: dashed;">
   <label for="purposeType" style="font-size: 11pt; font-weight:bold; color: var(--primary);">📝 用途</label>
   <select id="purposeType" class="modal-input" onchange="window.togglePurpose()">
-    <option value="class">學年使用</option><option value="other">其他用途</option>
+    <option value="class">班級使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv">
-    <label for="classSelect" style="display:none;">選擇使用學年</label>
-    <select id="classSelect" class="modal-input" aria-label="選擇使用學年"></select>
+    <label for="classSelect" style="display:none;">選擇使用班級</label>
+    <select id="classSelect" class="modal-input" aria-label="選擇使用班級"></select>
   </div>
   <div id="otherDiv" style="display:none;">
     <label for="otherPurpose" style="display:none;">請輸入其他用途</label>
@@ -559,7 +559,7 @@
   import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   // ▼ 請將 fallbackConfig 替換成你在 Firebase 複製的真實設定 ▼
-const firebaseConfig = {
+ const firebaseConfig = {
   apiKey: "AIzaSyADU-7pD4C_W7egA3GNEx-DzmGr0jjiB4c",
   authDomain: "site-7cd78.firebaseapp.com",
   projectId: "site-7cd78",
@@ -1003,7 +1003,7 @@ const firebaseConfig = {
       } else {
         await addDoc(getPublicCol('bookings'), {
           date: currentSel.d, period: currentSel.p, item: currentSel.item,
-          user: staticData.userInfo.name, account: staticData.userInfo.account || staticData.userInfo.name, purpose: pVal, keyStatus: "未借出", timestamp: Date.now()
+          user: staticData.userInfo.name, account: staticData.userInfo.account || staticData.userInfo.name, purpose: pVal, keyStatus: "已借出", timestamp: Date.now()
         });
         showSystemAlert("✅ 預約成功！");
       }
@@ -1196,10 +1196,8 @@ const firebaseConfig = {
           statusBadge = `<span style="color:var(--danger); font-weight:bold;">已取消</span>`;
         } else if (r.keyStatus === '已歸還') {
           statusBadge = `<span style="color:var(--success); font-weight:bold;">✔️ 已歸還</span>`;
-        } else if (r.keyStatus === '已借出') {
-          statusBadge = `<span style="color:var(--danger); font-weight:bold;">🔑 已借出</span>`;
         } else {
-          statusBadge = `<span style="color:#64748b;">未借出</span>`;
+          statusBadge = `<span style="color:var(--danger); font-weight:bold;">🔑 已借出</span>`;
         }
 
         tableHtml += `
@@ -1240,7 +1238,7 @@ const firebaseConfig = {
         "借用教師": r.user,
         "帳號": r.account || '',
         "使用班級/用途": r.purpose,
-        "鑰匙狀態": r.purpose === '已取消' ? '已取消' : (r.keyStatus || '未借出')
+        "鑰匙狀態": r.purpose === '已取消' ? '已取消' : (r.keyStatus === '已歸還' ? '已歸還' : '已借出')
       };
     });
 
@@ -1542,10 +1540,9 @@ const firebaseConfig = {
               <div style="font-weight:bold; font-size:12pt; color:#333;">${r.item}</div>
               <div style="color:#666; margin-top:5px; font-size:11pt;">借用人：<span style="color:var(--admin-purple); font-weight:bold;">${r.user}</span> (${r.purpose})</div>
               <div class="key-group" style="display:flex; gap:8px; margin-top:10px; align-items:center;">
-                <span style="font-weight:bold; color:#555; font-size:11pt;">🔑 鑰匙：</span>
-                <button class="key-btn ${r.keyStatus==='未借出'?'active-unlent':''}" onclick="window.setKey('${r.id}', '未借出', this)">未借出</button>
-                <button class="key-btn ${r.keyStatus==='已借出'?'active-lent':''}" onclick="window.setKey('${r.id}', '已借出', this)">已借出</button>
-                <button class="key-btn ${r.keyStatus==='已歸還'?'active-returned':''}" onclick="window.setKey('${r.id}', '已歸還', this)">已歸還</button>
+                <span style="font-weight:bold; color:#555; font-size:11pt;">🔑 狀態：</span>
+                <button class="key-btn ${r.keyStatus!=='已歸還'?'active-lent':''}" onclick="window.setKey('${r.id}', '已借出', this)">🔑 已借出</button>
+                <button class="key-btn ${r.keyStatus==='已歸還'?'active-returned':''}" onclick="window.setKey('${r.id}', '已歸還', this)">✔️ 已歸還</button>
               </div>
             </div>`).join('');
         }

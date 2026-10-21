@@ -437,7 +437,7 @@
              </label>
           </div>
           <div style="font-size: 10pt; color: #78909c; margin-bottom: 10px; line-height: 1.5;">
-             ※ 批次匯入 Excel 支援多種欄位名稱：系統會自動尋找 <b>「姓名」</b> 欄位。密碼則會尋找 <b>「密碼」</b> 或預設為 123456。若包含 <b>「權限」</b> 欄位且內容為 "管理員"，則該帳號具備後台權限。
+             ※ 批次匯入 Excel 支援多種欄位名稱：系統會自動尋找 <b>「姓名」</b> 欄位。密碼則會尋找 <b>「密碼」</b> 。若包含 <b>「權限」</b> 欄位且內容為 "管理員"，則該帳號具備後台權限。
           </div>
           <div id="userTableContainer" style="overflow-x:auto;"></div>
         </div>
@@ -445,9 +445,9 @@
         <div id="admin-page5" style="display:none;">
           <div class="config-grid">
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 場地清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
+                <label for="newItemInput" style="display:none;">輸入場地名稱</label>
                 <input type="text" id="newItemInput" class="admin-input" placeholder="輸入名稱..." aria-label="輸入名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
@@ -458,7 +458,7 @@
               <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 學年清單設定</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
                 <label for="newClassInput" style="display:none;">輸入學年名稱</label>
-                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新班級 (如: 401、科任)..." aria-label="輸入新班級名稱">
+                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新學年 (如: 401、科任)..." aria-label="輸入新學年名稱">
                 <button class="btn-admin-active" onclick="window.addClassConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="classesListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
@@ -528,7 +528,7 @@
     <option value="class">學年使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv">
-    <label for="classSelect" style="display:none;">選擇使用班級</label>
+    <label for="classSelect" style="display:none;">選擇使用學年</label>
     <select id="classSelect" class="modal-input" aria-label="選擇使用學年"></select>
   </div>
   <div id="otherDiv" style="display:none;">
@@ -805,7 +805,7 @@
     if(resItem) resItem.innerHTML = itemsHtml;
     if(reportItemFilter) {
       const currentVal = reportItemFilter.value || 'ALL';
-      reportItemFilter.innerHTML = `<option value="ALL">全部設備 / 專科教室</option>` + itemsHtml;
+      reportItemFilter.innerHTML = `<option value="ALL">全部場地</option>` + itemsHtml;
       reportItemFilter.value = currentVal;
     }
     document.getElementById('classSelect').innerHTML = staticData.classes.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -977,7 +977,7 @@
 
   window.openModal = function(d, p) {
     currentSel = { d, p, item: document.getElementById('itemSelect').value };
-    document.getElementById('confirmDetail').innerHTML = `借用日期：<b>${d}</b><br>節次：<b>${p}</b><br>設備：<b>${currentSel.item}</b>`;
+    document.getElementById('confirmDetail').innerHTML = `借用日期：<b>${d}</b><br>節次：<b>${p}</b><br>場地：<b>${currentSel.item}</b>`;
     document.getElementById('overlay').style.display = 'block'; document.getElementById('modal').style.display = 'block';
   };
   window.closeModal = function() { document.getElementById('overlay').style.display = 'none'; document.getElementById('modal').style.display = 'none'; };
@@ -1060,7 +1060,7 @@
     return `<div class="${cardClass}">
               <div style="flex-grow:1;">
                 <div style="font-weight:bold; font-size:12pt; margin-bottom:8px; color:#333;">📅 ${r.date} &nbsp;|&nbsp; ⏱️ ${r.period}</div>
-                <div style="color:#555; font-size:10pt; line-height:1.6;">設備：<span style="font-weight:bold; color:var(--primary);">${r.item}</span><br>用途：${r.purpose}</div>
+                <div style="color:#555; font-size:10pt; line-height:1.6;">場地：<span style="font-weight:bold; color:var(--primary);">${r.item}</span><br>用途：${r.purpose}</div>
               </div>
               <div>${actionHtml}</div>
             </div>`;
@@ -1160,7 +1160,7 @@
           <div style="font-size:18pt; font-weight:bold; color:var(--primary-light); margin-top:6px;">${validList.length} <span style="font-size:11pt; font-weight:normal;">節</span></div>
         </div>
         <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--success);">
-          <div style="font-size:10pt; color:#64748b; font-weight:bold;">🏆 本月最熱門設備</div>
+          <div style="font-size:10pt; color:#64748b; font-weight:bold;">🏆 本月最熱門場地</div>
           <div style="font-size:13pt; font-weight:bold; color:var(--success); margin-top:8px;">${topItem ? `${topItem[0]} (${topItem[1]}節)` : '尚無紀錄'}</div>
         </div>
         <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--admin-purple);">
@@ -1179,9 +1179,9 @@
           <tr>
             <th style="width:16%;">借用日期</th>
             <th style="width:14%;">節次</th>
-            <th style="width:26%;">設備 / 專科教室</th>
+            <th style="width:26%;">場地</th>
             <th style="width:14%;">借用教師</th>
-            <th style="width:16%;">班級 / 用途</th>
+            <th style="width:16%;">學年 / 用途</th>
             <th style="width:14%;">鑰匙 / 狀態</th>
           </tr>
       `;
@@ -1234,10 +1234,10 @@
         "借用日期": r.date,
         "星期": dayNames[dayIdx],
         "節次": r.period,
-        "設備/專科教室": r.item,
+        "場地": r.item,
         "借用教師": r.user,
         "帳號": r.account || '',
-        "使用班級/用途": r.purpose,
+        "使用學年/用途": r.purpose,
         "鑰匙狀態": r.purpose === '已取消' ? '已取消' : (r.keyStatus === '已歸還' ? '已歸還' : '已借出')
       };
     });
@@ -1245,7 +1245,7 @@
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, `${monthVal}預約報表`);
-    XLSX.writeFile(workbook, `教學設備預約月報表_${monthVal}.xlsx`);
+    XLSX.writeFile(workbook, `場地預約月報表_${monthVal}.xlsx`);
   };
 
   window.saveConfigListsToDB = async function() {
@@ -1265,7 +1265,7 @@
   window.renderConfigLists = function() {
     const itemsBox = document.getElementById('itemsListContainer');
     if (itemsBox) {
-      itemsBox.innerHTML = staticData.items.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無設備項目</div>' : staticData.items.map((item, idx) => `
+      itemsBox.innerHTML = staticData.items.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無場地項目</div>' : staticData.items.map((item, idx) => `
         <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0; gap:8px;">
           <span style="font-weight:bold; color:#333; word-break:break-all;">${item}</span>
           <div style="display:flex; gap:6px; flex-shrink:0;">
@@ -1277,7 +1277,7 @@
 
     const classesBox = document.getElementById('classesListContainer');
     if (classesBox) {
-      classesBox.innerHTML = staticData.classes.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無班級項目</div>' : staticData.classes.map((cls, idx) => `
+      classesBox.innerHTML = staticData.classes.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無學年項目</div>' : staticData.classes.map((cls, idx) => `
         <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0; gap:8px;">
           <span style="font-weight:bold; color:#333; word-break:break-all;">${cls}</span>
           <div style="display:flex; gap:6px; flex-shrink:0;">
@@ -1406,12 +1406,12 @@
     const oldVal = staticData.items[idx];
     document.getElementById('alertOverlay').style.display = 'block';
     const modal = document.getElementById('customModal');
-    document.getElementById('customModalTitle').innerText = "✏️ 修改設備/教室名稱";
+    document.getElementById('customModalTitle').innerText = "✏️ 修改場地名稱";
     document.getElementById('customModalBody').innerHTML = `
       <div style="font-size:10pt; color:#666; margin-bottom:10px; text-align:left;"><label for="editConfigInput">原名稱：<b>${oldVal}</b></label></div>
-      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新名稱" aria-label="請輸入新設備或教室名稱">
+      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新名稱" aria-label="請輸入新場地名稱">
       <label style="display:flex; align-items:center; gap:6px; font-size:10pt; color:#555; cursor:pointer; text-align:left; margin-bottom:10px;">
-        <input type="checkbox" id="syncHistoryRecords" checked> 同步更新已預約紀錄與禁借設定中的設備名稱
+        <input type="checkbox" id="syncHistoryRecords" checked> 同步更新已預約紀錄與禁借設定中的場地名稱
       </label>`;
     const submitBtn = document.getElementById('customModalSubmit');
     submitBtn.onclick = async function() {
@@ -1419,7 +1419,7 @@
       const syncHistory = document.getElementById('syncHistoryRecords').checked;
       if (!newVal) { showSystemAlert("名稱不能為空！"); return; }
       if (newVal === oldVal) { window.closeCustomModal(); return; }
-      if (staticData.items.some((item, i) => i !== idx && item === newVal)) { showSystemAlert("⚠️ 該設備/教室名稱已存在！"); return; }
+      if (staticData.items.some((item, i) => i !== idx && item === newVal)) { showSystemAlert("⚠️ 該場地名稱已存在！"); return; }
 
       submitBtn.innerText = "處理中..."; submitBtn.disabled = true;
       try {
@@ -1449,16 +1449,16 @@
     const oldVal = staticData.classes[idx];
     document.getElementById('alertOverlay').style.display = 'block';
     const modal = document.getElementById('customModal');
-    document.getElementById('customModalTitle').innerText = "✏️ 修改班級名稱";
+    document.getElementById('customModalTitle').innerText = "✏️ 修改學年名稱";
     document.getElementById('customModalBody').innerHTML = `
-      <div style="font-size:10pt; color:#666; margin-bottom:10px; text-align:left;"><label for="editConfigInput">原班級：<b>${oldVal}</b></label></div>
-      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新班級名稱" aria-label="請輸入新班級名稱">`;
+      <div style="font-size:10pt; color:#666; margin-bottom:10px; text-align:left;"><label for="editConfigInput">原學年：<b>${oldVal}</b></label></div>
+      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新學年名稱" aria-label="請輸入新學年名稱">`;
     const submitBtn = document.getElementById('customModalSubmit');
     submitBtn.onclick = async function() {
       const newVal = document.getElementById('editConfigInput').value.trim();
-      if (!newVal) { showSystemAlert("班級名稱不能為空！"); return; }
+      if (!newVal) { showSystemAlert("學年名稱不能為空！"); return; }
       if (newVal === oldVal) { window.closeCustomModal(); return; }
-      if (staticData.classes.some((cls, i) => i !== idx && cls === newVal)) { showSystemAlert("⚠️ 該班級名稱已存在！"); return; }
+      if (staticData.classes.some((cls, i) => i !== idx && cls === newVal)) { showSystemAlert("⚠️ 該學年名稱已存在！"); return; }
 
       submitBtn.innerText = "處理中..."; submitBtn.disabled = true;
       try {
@@ -1466,7 +1466,7 @@
         await window.saveConfigListsToDB();
         window.closeCustomModal();
         window.renderConfigLists();
-        showSystemAlert(`✅ 已將班級「${oldVal}」修改為「${newVal}」！`);
+        showSystemAlert(`✅ 已將學年「${oldVal}」修改為「${newVal}」！`);
       } catch (err) {
         showSystemAlert("修改失敗：" + err.message);
       } finally {
@@ -1479,13 +1479,13 @@
   window.addItemConfig = async function() {
     const input = document.getElementById('newItemInput');
     const val = input.value.trim();
-    if (!val) { showSystemAlert("請輸入設備或專科教室名稱！"); return; }
-    if (staticData.items.includes(val)) { showSystemAlert("⚠️ 該設備/教室名稱已存在！"); return; }
+    if (!val) { showSystemAlert("請輸入場地名稱！"); return; }
+    if (staticData.items.includes(val)) { showSystemAlert("⚠️ 該場地名稱已存在！"); return; }
     staticData.items.push(val);
     input.value = '';
     await window.saveConfigListsToDB();
     window.renderConfigLists();
-    showSystemAlert(`✅ 已新增設備/教室：「${val}」`);
+    showSystemAlert(`✅ 已新增場地：「${val}」`);
   };
 
   window.deleteItemConfig = function(idx) {
@@ -1500,18 +1500,18 @@
   window.addClassConfig = async function() {
     const input = document.getElementById('newClassInput');
     const val = input.value.trim();
-    if (!val) { showSystemAlert("請輸入班級名稱！"); return; }
-    if (staticData.classes.includes(val)) { showSystemAlert("⚠️ 該班級名稱已存在！"); return; }
+    if (!val) { showSystemAlert("請輸入學年名稱！"); return; }
+    if (staticData.classes.includes(val)) { showSystemAlert("⚠️ 該學年名稱已存在！"); return; }
     staticData.classes.push(val);
     input.value = '';
     await window.saveConfigListsToDB();
     window.renderConfigLists();
-    showSystemAlert(`✅ 已新增班級：「${val}」`);
+    showSystemAlert(`✅ 已新增學年：「${val}」`);
   };
 
   window.deleteClassConfig = function(idx) {
     const target = staticData.classes[idx];
-    window.showSystemConfirm(`確定要刪除班級「${target}」嗎？`, async () => {
+    window.showSystemConfirm(`確定要刪除學年「${target}」嗎？`, async () => {
       staticData.classes.splice(idx, 1);
       await window.saveConfigListsToDB();
       window.renderConfigLists();
@@ -1620,7 +1620,7 @@
         type: 'bar',
         data: {
           labels: items.map(d => d.name),
-          datasets: [{ label: '設備借用總次數', data: items.map(d => d.count), backgroundColor: 'rgba(0, 100, 102, 0.6)', borderColor: 'rgba(0, 100, 102, 1)', borderWidth: 1, borderRadius: 4 }]
+          datasets: [{ label: '場地借用總次數', data: items.map(d => d.count), backgroundColor: 'rgba(0, 100, 102, 0.6)', borderColor: 'rgba(0, 100, 102, 1)', borderWidth: 1, borderRadius: 4 }]
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
       });

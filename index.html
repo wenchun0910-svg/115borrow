@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>教學設備與專科教室借用系統</title>
+  <title>長安場地使用系統</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
@@ -287,8 +287,8 @@
 
   <div class="login-wrapper">
     <div class="login-box">
-      <h2>設備預約系統</h2>
-      <div class="login-subtitle">教學設備與專科教室借用平台</div>
+      <h2>長安場地預約系統</h2>
+      <div class="login-subtitle"></div>
       <label for="loginNameSelect" style="display:none;">選擇您的姓名</label>
       <select id="loginNameSelect" class="login-input" style="margin-bottom: 15px;" aria-label="選擇您的姓名" autocomplete="username">
         <option value="">載入名單中...</option>
@@ -297,7 +297,7 @@
       <input type="password" id="loginPinInput" class="login-input" placeholder="請輸入登入密碼" style="margin-bottom: 12px;" aria-label="請輸入密碼" autocomplete="current-password">
       <div style="font-size: 10pt; color: #334155; text-align: left; margin-bottom: 22px; line-height: 1.6; background: #f1f5f9; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--primary); font-weight: 500;">
         💡 請選擇您的姓名，並輸入密碼登入。<br>
-        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴或 123456)</span>
+        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴)</span>
       </div>
       <button id="btnLoginSubmit" class="btn-login" onclick="window.doLogin()">登入系統</button>
     </div>
@@ -309,7 +309,7 @@
     <div class="wavy-top"></div>
     <div class="main-content">
       <div class="app-header">
-        <h1 class="app-title">🍵 教學設備與專科教室預約</h1>
+        <h1 class="app-title">🍵 場地預約</h1>
         <div class="header-user">
           <span id="displayUserName">使用者</span>
           <button class="btn-logout" onclick="window.doLogout(false)">登出</button>
@@ -343,7 +343,7 @@
             <input type="date" id="targetDate" onchange="window.refreshBooking()">
           </div>
           <div>
-            <label for="itemSelect">💻 選擇設備 / 專科教室</label>
+            <label for="itemSelect">💻 選擇場地</label>
             <select id="itemSelect" onchange="window.refreshBooking()"></select>
           </div>
         </div>
@@ -369,7 +369,7 @@
           <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">🔒 批次禁借設定</div>
           <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 借用統計圖表</div>
           <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號與權限管理</div>
-          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 設備、班級與節次設定</div>
+          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 場地、班級與節次設定</div>
           <div id="admin-t6" class="admin-tab" onclick="window.switchAdminTab(6)">📑 每月預約報表</div>
         </div>
 
@@ -383,7 +383,7 @@
 
         <div id="admin-page2" style="display:none;">
           <div class="form-row">
-            <label class="title" for="resItem">💻 選擇禁借設備 / 教室</label>
+            <label class="title" for="resItem">💻 選擇禁借場地</label>
             <select id="resItem"></select>
           </div>
           <div class="form-row">
@@ -414,7 +414,7 @@
           </div>
           <div class="form-row">
             <label class="title" for="resNote">📝 備註原因</label>
-            <input type="text" id="resNote" class="admin-input" placeholder="例如：設備維修中、期末盤點...">
+            <input type="text" id="resNote" class="admin-input" placeholder="例如：場地維修中、期末盤點...">
           </div>
           <button id="resSubmitBtn" class="btn-submit" onclick="window.submitRestrict()">確認並寫入設定</button>
         </div>
@@ -445,20 +445,20 @@
         <div id="admin-page5" style="display:none;">
           <div class="config-grid">
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 場地清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
-                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新設備或教室名稱..." aria-label="輸入新設備或教室名稱">
+                <label for="newItemInput" style="display:none;">輸入場地名稱</label>
+                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入場地名稱..." aria-label="輸入場地名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="itemsListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
             </div>
 
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 班級清單設定</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 學年清單設定</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newClassInput" style="display:none;">輸入新班級名稱</label>
-                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新班級 (如: 401、科任)..." aria-label="輸入新班級名稱">
+                <label for="newClassInput" style="display:none;">輸入新學年名稱</label>
+                <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新學年 (如: 401、科任)..." aria-label="輸入新學年名稱">
                 <button class="btn-admin-active" onclick="window.addClassConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="classesListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
@@ -491,9 +491,9 @@
               <input type="month" id="reportMonth" class="admin-input" style="max-width:170px;" onchange="window.loadMonthlyReport()">
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 設備篩選：</label>
+              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 場地篩選：</label>
               <select id="reportItemFilter" class="admin-input" style="max-width:220px;" onchange="window.loadMonthlyReport()">
-                <option value="ALL">全部設備 / 專科教室</option>
+                <option value="ALL">全部場地</option>
               </select>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -525,11 +525,11 @@
   <input type="text" id="userName" class="modal-input" readonly style="background:#f1f5f9; color:#64748b; border-style: dashed;">
   <label for="purposeType" style="font-size: 11pt; font-weight:bold; color: var(--primary);">📝 用途</label>
   <select id="purposeType" class="modal-input" onchange="window.togglePurpose()">
-    <option value="class">班級使用</option><option value="other">其他用途</option>
+    <option value="class">學年使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv">
-    <label for="classSelect" style="display:none;">選擇使用班級</label>
-    <select id="classSelect" class="modal-input" aria-label="選擇使用班級"></select>
+    <label for="classSelect" style="display:none;">選擇使用學年</label>
+    <select id="classSelect" class="modal-input" aria-label="選擇使用學年"></select>
   </div>
   <div id="otherDiv" style="display:none;">
     <label for="otherPurpose" style="display:none;">請輸入其他用途</label>
@@ -805,7 +805,7 @@ const firebaseConfig = {
     if(resItem) resItem.innerHTML = itemsHtml;
     if(reportItemFilter) {
       const currentVal = reportItemFilter.value || 'ALL';
-      reportItemFilter.innerHTML = `<option value="ALL">全部設備 / 專科教室</option>` + itemsHtml;
+      reportItemFilter.innerHTML = `<option value="ALL">全部場地</option>` + itemsHtml;
       reportItemFilter.value = currentVal;
     }
     document.getElementById('classSelect').innerHTML = staticData.classes.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -977,7 +977,7 @@ const firebaseConfig = {
 
   window.openModal = function(d, p) {
     currentSel = { d, p, item: document.getElementById('itemSelect').value };
-    document.getElementById('confirmDetail').innerHTML = `借用日期：<b>${d}</b><br>節次：<b>${p}</b><br>設備：<b>${currentSel.item}</b>`;
+    document.getElementById('confirmDetail').innerHTML = `借用日期：<b>${d}</b><br>節次：<b>${p}</b><br>場地：<b>${currentSel.item}</b>`;
     document.getElementById('overlay').style.display = 'block'; document.getElementById('modal').style.display = 'block';
   };
   window.closeModal = function() { document.getElementById('overlay').style.display = 'none'; document.getElementById('modal').style.display = 'none'; };
@@ -1165,7 +1165,7 @@ const firebaseConfig = {
           <div style="font-size:18pt; font-weight:bold; color:var(--primary-light); margin-top:6px;">${validList.length} <span style="font-size:11pt; font-weight:normal;">節</span></div>
         </div>
         <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--success);">
-          <div style="font-size:10pt; color:#64748b; font-weight:bold;">🏆 本月最熱門設備</div>
+          <div style="font-size:10pt; color:#64748b; font-weight:bold;">🏆 本月最熱門場地</div>
           <div style="font-size:13pt; font-weight:bold; color:var(--success); margin-top:8px;">${topItem ? `${topItem[0]} (${topItem[1]}節)` : '尚無紀錄'}</div>
         </div>
         <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--admin-purple);">
@@ -1184,7 +1184,7 @@ const firebaseConfig = {
           <tr>
             <th style="width:16%;">借用日期</th>
             <th style="width:14%;">節次</th>
-            <th style="width:26%;">設備 / 專科教室</th>
+            <th style="width:26%;">場地</th>
             <th style="width:14%;">借用教師</th>
             <th style="width:16%;">班級 / 用途</th>
             <th style="width:14%;">鑰匙 / 狀態</th>
@@ -1239,10 +1239,10 @@ const firebaseConfig = {
         "借用日期": r.date,
         "星期": dayNames[dayIdx],
         "節次": r.period,
-        "設備/專科教室": r.item,
+        "場地": r.item,
         "借用教師": r.user,
         "帳號": r.account || '',
-        "使用班級/用途": r.purpose,
+        "使用學年/用途": r.purpose,
         "鑰匙狀態": r.purpose === '已取消' ? '已取消' : (r.keyStatus === '已歸還' ? '已歸還' : '已借出')
       };
     });
@@ -1250,7 +1250,7 @@ const firebaseConfig = {
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, `${monthVal}預約報表`);
-    XLSX.writeFile(workbook, `教學設備預約月報表_${monthVal}.xlsx`);
+    XLSX.writeFile(workbook, `場地預約月報表_${monthVal}.xlsx`);
   };
 
   window.saveConfigListsToDB = async function() {
@@ -1270,7 +1270,7 @@ const firebaseConfig = {
   window.renderConfigLists = function() {
     const itemsBox = document.getElementById('itemsListContainer');
     if (itemsBox) {
-      itemsBox.innerHTML = staticData.items.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無設備項目</div>' : staticData.items.map((item, idx) => `
+      itemsBox.innerHTML = staticData.items.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無場地項目</div>' : staticData.items.map((item, idx) => `
         <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0; gap:8px;">
           <span style="font-weight:bold; color:#333; word-break:break-all;">${item}</span>
           <div style="display:flex; gap:6px; flex-shrink:0;">
@@ -1282,7 +1282,7 @@ const firebaseConfig = {
 
     const classesBox = document.getElementById('classesListContainer');
     if (classesBox) {
-      classesBox.innerHTML = staticData.classes.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無班級項目</div>' : staticData.classes.map((cls, idx) => `
+      classesBox.innerHTML = staticData.classes.length === 0 ? '<div style="color:#999; text-align:center; padding:15px;">尚無學年項目</div>' : staticData.classes.map((cls, idx) => `
         <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0; gap:8px;">
           <span style="font-weight:bold; color:#333; word-break:break-all;">${cls}</span>
           <div style="display:flex; gap:6px; flex-shrink:0;">
@@ -1414,7 +1414,7 @@ const firebaseConfig = {
     document.getElementById('customModalTitle').innerText = "✏️ 修改設備/教室名稱";
     document.getElementById('customModalBody').innerHTML = `
       <div style="font-size:10pt; color:#666; margin-bottom:10px; text-align:left;"><label for="editConfigInput">原名稱：<b>${oldVal}</b></label></div>
-      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新名稱" aria-label="請輸入新設備或教室名稱">
+      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新名稱" aria-label="請輸入場地">
       <label style="display:flex; align-items:center; gap:6px; font-size:10pt; color:#555; cursor:pointer; text-align:left; margin-bottom:10px;">
         <input type="checkbox" id="syncHistoryRecords" checked> 同步更新已預約紀錄與禁借設定中的設備名稱
       </label>`;
@@ -1424,7 +1424,7 @@ const firebaseConfig = {
       const syncHistory = document.getElementById('syncHistoryRecords').checked;
       if (!newVal) { showSystemAlert("名稱不能為空！"); return; }
       if (newVal === oldVal) { window.closeCustomModal(); return; }
-      if (staticData.items.some((item, i) => i !== idx && item === newVal)) { showSystemAlert("⚠️ 該設備/教室名稱已存在！"); return; }
+      if (staticData.items.some((item, i) => i !== idx && item === newVal)) { showSystemAlert("⚠️ 該場地名稱已存在！"); return; }
 
       submitBtn.innerText = "處理中..."; submitBtn.disabled = true;
       try {
@@ -1454,16 +1454,16 @@ const firebaseConfig = {
     const oldVal = staticData.classes[idx];
     document.getElementById('alertOverlay').style.display = 'block';
     const modal = document.getElementById('customModal');
-    document.getElementById('customModalTitle').innerText = "✏️ 修改班級名稱";
+    document.getElementById('customModalTitle').innerText = "✏️ 修改學年名稱";
     document.getElementById('customModalBody').innerHTML = `
-      <div style="font-size:10pt; color:#666; margin-bottom:10px; text-align:left;"><label for="editConfigInput">原班級：<b>${oldVal}</b></label></div>
-      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新班級名稱" aria-label="請輸入新班級名稱">`;
+      <div style="font-size:10pt; color:#666; margin-bottom:10px; text-align:left;"><label for="editConfigInput">原學年：<b>${oldVal}</b></label></div>
+      <input type="text" id="editConfigInput" class="modal-input modal-input-admin" value="${oldVal}" placeholder="請輸入新學年名稱" aria-label="請輸入新學年名稱">`;
     const submitBtn = document.getElementById('customModalSubmit');
     submitBtn.onclick = async function() {
       const newVal = document.getElementById('editConfigInput').value.trim();
-      if (!newVal) { showSystemAlert("班級名稱不能為空！"); return; }
+      if (!newVal) { showSystemAlert("學年名稱不能為空！"); return; }
       if (newVal === oldVal) { window.closeCustomModal(); return; }
-      if (staticData.classes.some((cls, i) => i !== idx && cls === newVal)) { showSystemAlert("⚠️ 該班級名稱已存在！"); return; }
+      if (staticData.classes.some((cls, i) => i !== idx && cls === newVal)) { showSystemAlert("⚠️ 該學年名稱已存在！"); return; }
 
       submitBtn.innerText = "處理中..."; submitBtn.disabled = true;
       try {
@@ -1471,7 +1471,7 @@ const firebaseConfig = {
         await window.saveConfigListsToDB();
         window.closeCustomModal();
         window.renderConfigLists();
-        showSystemAlert(`✅ 已將班級「${oldVal}」修改為「${newVal}」！`);
+        showSystemAlert(`✅ 已將學年「${oldVal}」修改為「${newVal}」！`);
       } catch (err) {
         showSystemAlert("修改失敗：" + err.message);
       } finally {
@@ -1484,13 +1484,13 @@ const firebaseConfig = {
   window.addItemConfig = async function() {
     const input = document.getElementById('newItemInput');
     const val = input.value.trim();
-    if (!val) { showSystemAlert("請輸入設備或專科教室名稱！"); return; }
-    if (staticData.items.includes(val)) { showSystemAlert("⚠️ 該設備/教室名稱已存在！"); return; }
+    if (!val) { showSystemAlert("請輸入場地名稱！"); return; }
+    if (staticData.items.includes(val)) { showSystemAlert("⚠️ 該場地名稱已存在！"); return; }
     staticData.items.push(val);
     input.value = '';
     await window.saveConfigListsToDB();
     window.renderConfigLists();
-    showSystemAlert(`✅ 已新增設備/教室：「${val}」`);
+    showSystemAlert(`✅ 已新增場地：「${val}」`);
   };
 
   window.deleteItemConfig = function(idx) {
@@ -1505,18 +1505,18 @@ const firebaseConfig = {
   window.addClassConfig = async function() {
     const input = document.getElementById('newClassInput');
     const val = input.value.trim();
-    if (!val) { showSystemAlert("請輸入班級名稱！"); return; }
-    if (staticData.classes.includes(val)) { showSystemAlert("⚠️ 該班級名稱已存在！"); return; }
+    if (!val) { showSystemAlert("請輸入學年名稱！"); return; }
+    if (staticData.classes.includes(val)) { showSystemAlert("⚠️ 該學年名稱已存在！"); return; }
     staticData.classes.push(val);
     input.value = '';
     await window.saveConfigListsToDB();
     window.renderConfigLists();
-    showSystemAlert(`✅ 已新增班級：「${val}」`);
+    showSystemAlert(`✅ 已新增學年：「${val}」`);
   };
 
   window.deleteClassConfig = function(idx) {
     const target = staticData.classes[idx];
-    window.showSystemConfirm(`確定要刪除班級「${target}」嗎？`, async () => {
+    window.showSystemConfirm(`確定要刪除學年「${target}」嗎？`, async () => {
       staticData.classes.splice(idx, 1);
       await window.saveConfigListsToDB();
       window.renderConfigLists();

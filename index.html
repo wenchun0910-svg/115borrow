@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>長安場地使用系統</title>
+  <title>s長安場地使用系統</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
@@ -309,7 +309,7 @@
     <div class="wavy-top"></div>
     <div class="main-content">
       <div class="app-header">
-        <h1 class="app-title">🍵 場地使用預約</h1>
+        <h1 class="app-title">🍵 校慶進場練習場地預約</h1>
         <div class="header-user">
           <span id="displayUserName">使用者</span>
           <button class="btn-logout" onclick="window.doLogout(false)">登出</button>
@@ -369,7 +369,8 @@
           <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">🔒 批次禁借設定</div>
           <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 借用統計圖表</div>
           <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號與權限管理</div>
-          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 場地、班級與節次設定</div>
+          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 設備、班級與節次設定</div>
+          <div id="admin-t6" class="admin-tab" onclick="window.switchAdminTab(6)">📑 每月預約報表</div>
         </div>
 
         <div id="admin-page1">
@@ -382,7 +383,7 @@
 
         <div id="admin-page2" style="display:none;">
           <div class="form-row">
-            <label class="title" for="resItem">💻 選擇禁借場地</label>
+            <label class="title" for="resItem">💻 選擇禁借設備 / 教室</label>
             <select id="resItem"></select>
           </div>
           <div class="form-row">
@@ -436,7 +437,7 @@
              </label>
           </div>
           <div style="font-size: 10pt; color: #78909c; margin-bottom: 10px; line-height: 1.5;">
-             ※ 批次匯入 Excel 支援多種欄位名稱：系統會自動尋找 <b>「姓名」</b> 欄位。密碼則會尋找 <b>「密碼」</b> 。若包含 <b>「權限」</b> 欄位且內容為 "管理員"，則該帳號具備後台權限。
+             ※ 批次匯入 Excel 支援多種欄位名稱：系統會自動尋找 <b>「姓名」</b> 欄位。密碼則會尋找 <b>「密碼」</b> 或預設為 123456。若包含 <b>「權限」</b> 欄位且內容為 "管理員"，則該帳號具備後台權限。
           </div>
           <div id="userTableContainer" style="overflow-x:auto;"></div>
         </div>
@@ -444,10 +445,10 @@
         <div id="admin-page5" style="display:none;">
           <div class="config-grid">
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 場地清單</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newItemInput" style="display:none;">輸入新場地名稱</label>
-                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新場地名稱..." aria-label="輸入新場地名稱">
+                <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
+                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新設備或教室名稱..." aria-label="輸入新設備或教室名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="itemsListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
@@ -482,6 +483,34 @@
             </div>
           </div>
         </div>
+
+        <div id="admin-page6" style="display:none;">
+          <div style="margin-bottom:18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:#f8fafc; padding:15px 18px; border-radius:8px; border:1px solid #cbd5e1;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label for="reportMonth" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">📅 選擇月份：</label>
+              <input type="month" id="reportMonth" class="admin-input" style="max-width:170px;" onchange="window.loadMonthlyReport()">
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 設備篩選：</label>
+              <select id="reportItemFilter" class="admin-input" style="max-width:220px;" onchange="window.loadMonthlyReport()">
+                <option value="ALL">全部設備 / 專科教室</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label for="reportStatusFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">📌 狀態：</label>
+              <select id="reportStatusFilter" class="admin-input" style="max-width:150px;" onchange="window.loadMonthlyReport()">
+                <option value="VALID">僅顯示有效預約</option>
+                <option value="ALL">包含已取消紀錄</option>
+              </select>
+            </div>
+            <button class="btn-admin-active" style="margin-left:auto; background:var(--success); display:flex; align-items:center; gap:6px;" onclick="window.exportMonthlyReportExcel()">
+              📥 匯出 Excel 報表
+            </button>
+          </div>
+
+          <div id="monthlySummaryCards" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:20px;"></div>
+          <div id="monthlyReportContainer" style="overflow-x:auto;"></div>
+        </div>
       </div>
     </div>
     <div class="wavy-bottom"></div>
@@ -496,7 +525,7 @@
   <input type="text" id="userName" class="modal-input" readonly style="background:#f1f5f9; color:#64748b; border-style: dashed;">
   <label for="purposeType" style="font-size: 11pt; font-weight:bold; color: var(--primary);">📝 用途</label>
   <select id="purposeType" class="modal-input" onchange="window.togglePurpose()">
-    <option value="class">學年使用</option><option value="other">其他用途</option>
+    <option value="class">班級使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv">
     <label for="classSelect" style="display:none;">選擇使用班級</label>
@@ -667,6 +696,8 @@ const firebaseConfig = {
     document.getElementById('adminDate').value = today;
     document.getElementById('resStartDate').value = today;
     document.getElementById('resEndDate').value = today;
+    const reportMonthEl = document.getElementById('reportMonth');
+    if (reportMonthEl) reportMonthEl.value = today.slice(0, 7);
 
     const configSnap = await getDoc(getPublicDoc('config', 'main'));
     if (configSnap.exists()) {
@@ -768,9 +799,15 @@ const firebaseConfig = {
   function initDropdowns() {
     const itemSel = document.getElementById('itemSelect');
     const resItem = document.getElementById('resItem');
+    const reportItemFilter = document.getElementById('reportItemFilter');
     const itemsHtml = staticData.items.map(i => `<option value="${i}">${i}</option>`).join('');
     itemSel.innerHTML = itemsHtml;
     if(resItem) resItem.innerHTML = itemsHtml;
+    if(reportItemFilter) {
+      const currentVal = reportItemFilter.value || 'ALL';
+      reportItemFilter.innerHTML = `<option value="ALL">全部設備 / 專科教室</option>` + itemsHtml;
+      reportItemFilter.value = currentVal;
+    }
     document.getElementById('classSelect').innerHTML = staticData.classes.map(c => `<option value="${c}">${c}</option>`).join('');
     
     const adminSwitchSel = document.getElementById('adminSwitchName');
@@ -1050,7 +1087,7 @@ const firebaseConfig = {
   };
 
   window.switchAdminTab = function(n) {
-    for(let i=1; i<=5; i++) {
+    for(let i=1; i<=6; i++) {
       const page = document.getElementById('admin-page'+i);
       const tab = document.getElementById('admin-t'+i);
       if(page) page.style.display = (i === n) ? 'block' : 'none';
@@ -1060,6 +1097,157 @@ const firebaseConfig = {
     if (n === 3) window.loadChart();
     if (n === 4) window.renderUserTable();
     if (n === 5) window.renderConfigLists();
+    if (n === 6) window.loadMonthlyReport();
+  };
+
+  let currentMonthlyReportData = [];
+
+  window.loadMonthlyReport = async function() {
+    if (!userId) return;
+    const monthVal = document.getElementById('reportMonth').value;
+    const itemFilter = document.getElementById('reportItemFilter').value;
+    const statusFilter = document.getElementById('reportStatusFilter').value;
+    const container = document.getElementById('monthlyReportContainer');
+    const summaryBox = document.getElementById('monthlySummaryCards');
+
+    if (!monthVal) {
+      container.innerHTML = '<div style="text-align:center; padding:30px; color:#888;">請先選擇查詢月份</div>';
+      summaryBox.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = '<div class="skeleton"></div><div class="skeleton" style="margin-top:10px;"></div>';
+
+    try {
+      const snap = await getDocs(getPublicCol('bookings'));
+      const allRecords = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      let filtered = allRecords.filter(r => r.date && r.date.startsWith(monthVal));
+      if (itemFilter !== 'ALL') {
+        filtered = filtered.filter(r => r.item === itemFilter);
+      }
+      if (statusFilter === 'VALID') {
+        filtered = filtered.filter(r => r.purpose !== '已取消');
+      }
+
+      const periodOrder = {};
+      staticData.periods.forEach((p, idx) => { periodOrder[p.name] = idx; });
+
+      filtered.sort((a, b) => {
+        const cmpDate = a.date.localeCompare(b.date);
+        if (cmpDate !== 0) return cmpDate;
+        const pA = periodOrder[a.period] !== undefined ? periodOrder[a.period] : 99;
+        const pB = periodOrder[b.period] !== undefined ? periodOrder[b.period] : 99;
+        return pA - pB;
+      });
+
+      currentMonthlyReportData = filtered;
+
+      // 計算統計摘要 (以有效預約計算)
+      const validList = filtered.filter(r => r.purpose !== '已取消');
+      const itemMap = {}, userMap = {};
+      validList.forEach(r => {
+        if (r.item) itemMap[r.item] = (itemMap[r.item] || 0) + 1;
+        if (r.user) userMap[r.user] = (userMap[r.user] || 0) + 1;
+      });
+
+      const topItem = Object.entries(itemMap).sort((a, b) => b[1] - a[1])[0];
+      const topUser = Object.entries(userMap).sort((a, b) => b[1] - a[1])[0];
+
+      summaryBox.innerHTML = `
+        <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--primary);">
+          <div style="font-size:10pt; color:#64748b; font-weight:bold;">📌 本月有效借用總節數</div>
+          <div style="font-size:18pt; font-weight:bold; color:var(--primary-light); margin-top:6px;">${validList.length} <span style="font-size:11pt; font-weight:normal;">節</span></div>
+        </div>
+        <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--success);">
+          <div style="font-size:10pt; color:#64748b; font-weight:bold;">🏆 本月最熱門設備</div>
+          <div style="font-size:13pt; font-weight:bold; color:var(--success); margin-top:8px;">${topItem ? `${topItem[0]} (${topItem[1]}節)` : '尚無紀錄'}</div>
+        </div>
+        <div style="background:#f4f7fa; padding:16px; border-radius:8px; border:1px solid #cbd5e1; border-left:5px solid var(--admin-purple);">
+          <div style="font-size:10pt; color:#64748b; font-weight:bold;">👨‍🏫 本月借用最多教師</div>
+          <div style="font-size:13pt; font-weight:bold; color:var(--admin-purple); margin-top:8px;">${topUser ? `${topUser[0]} (${topUser[1]}節)` : '尚無紀錄'}</div>
+        </div>
+      `;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:35px; color:#888; background:#fff; border-radius:8px; border:1px dashed #cbd5e1;">📭 ${monthVal} 尚無符合條件的預約紀錄</div>`;
+        return;
+      }
+
+      let tableHtml = `
+        <table>
+          <tr>
+            <th style="width:16%;">借用日期</th>
+            <th style="width:14%;">節次</th>
+            <th style="width:26%;">設備 / 專科教室</th>
+            <th style="width:14%;">借用教師</th>
+            <th style="width:16%;">班級 / 用途</th>
+            <th style="width:14%;">鑰匙 / 狀態</th>
+          </tr>
+      `;
+
+      filtered.forEach(r => {
+        const parts = r.date.split('-').map(Number);
+        const dayIdx = new Date(parts[0], parts[1] - 1, parts[2]).getDay();
+        const isCancelled = r.purpose === '已取消';
+        const rowStyle = isCancelled ? 'background:#fff5f5; color:#999;' : '';
+        let statusBadge = '';
+        if (isCancelled) {
+          statusBadge = `<span style="color:var(--danger); font-weight:bold;">已取消</span>`;
+        } else if (r.keyStatus === '已歸還') {
+          statusBadge = `<span style="color:var(--success); font-weight:bold;">✔️ 已歸還</span>`;
+        } else if (r.keyStatus === '已借出') {
+          statusBadge = `<span style="color:var(--danger); font-weight:bold;">🔑 已借出</span>`;
+        } else {
+          statusBadge = `<span style="color:#64748b;">未借出</span>`;
+        }
+
+        tableHtml += `
+          <tr style="${rowStyle}">
+            <td style="font-weight:bold;">${r.date} (${dayNames[dayIdx]})</td>
+            <td>${r.period}</td>
+            <td style="font-weight:bold; color:var(--primary-light);">${r.item}</td>
+            <td>${r.user}</td>
+            <td>${r.purpose}</td>
+            <td>${statusBadge}</td>
+          </tr>
+        `;
+      });
+
+      container.innerHTML = tableHtml + `</table>`;
+    } catch (err) {
+      console.error("載入月報表失敗:", err);
+      container.innerHTML = `<div style="color:var(--danger); padding:20px; text-align:center;">讀取月報表失敗：${err.message}</div>`;
+    }
+  };
+
+  window.exportMonthlyReportExcel = function() {
+    const monthVal = document.getElementById('reportMonth').value || '未指定月份';
+    if (!currentMonthlyReportData || currentMonthlyReportData.length === 0) {
+      showSystemAlert("⚠️ 目前畫面中沒有可匯出的預約紀錄！");
+      return;
+    }
+
+    const exportRows = currentMonthlyReportData.map((r, idx) => {
+      const parts = r.date.split('-').map(Number);
+      const dayIdx = new Date(parts[0], parts[1] - 1, parts[2]).getDay();
+      return {
+        "序號": idx + 1,
+        "借用日期": r.date,
+        "星期": dayNames[dayIdx],
+        "節次": r.period,
+        "設備/專科教室": r.item,
+        "借用教師": r.user,
+        "帳號": r.account || '',
+        "使用班級/用途": r.purpose,
+        "鑰匙狀態": r.purpose === '已取消' ? '已取消' : (r.keyStatus || '未借出')
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, `${monthVal}預約報表`);
+    XLSX.writeFile(workbook, `教學設備預約月報表_${monthVal}.xlsx`);
   };
 
   window.saveConfigListsToDB = async function() {

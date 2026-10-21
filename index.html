@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>教學設備與專科教室借用系統</title>
+  <title>長安場地使用系統</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
@@ -287,8 +287,8 @@
 
   <div class="login-wrapper">
     <div class="login-box">
-      <h2>設備預約系統</h2>
-      <div class="login-subtitle">教學設備與專科教室借用平台</div>
+      <h2>長安場地預約系統</h2>
+      <div class="login-subtitle"></div>
       <label for="loginNameSelect" style="display:none;">選擇您的姓名</label>
       <select id="loginNameSelect" class="login-input" style="margin-bottom: 15px;" aria-label="選擇您的姓名" autocomplete="username">
         <option value="">載入名單中...</option>
@@ -297,7 +297,7 @@
       <input type="password" id="loginPinInput" class="login-input" placeholder="請輸入登入密碼" style="margin-bottom: 12px;" aria-label="請輸入密碼" autocomplete="current-password">
       <div style="font-size: 10pt; color: #334155; text-align: left; margin-bottom: 22px; line-height: 1.6; background: #f1f5f9; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--primary); font-weight: 500;">
         💡 請選擇您的姓名，並輸入密碼登入。<br>
-        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴或 123456)</span>
+        <span style="font-size: 9pt; color: #64748b;">(若無特別修改，預設密碼通常為帳號前綴)</span>
       </div>
       <button id="btnLoginSubmit" class="btn-login" onclick="window.doLogin()">登入系統</button>
     </div>
@@ -309,7 +309,7 @@
     <div class="wavy-top"></div>
     <div class="main-content">
       <div class="app-header">
-        <h1 class="app-title">🍵 教學設備與專科教室預約</h1>
+        <h1 class="app-title">🍵 長安場地預約</h1>
         <div class="header-user">
           <span id="displayUserName">使用者</span>
           <button class="btn-logout" onclick="window.doLogout(false)">登出</button>
@@ -343,7 +343,7 @@
             <input type="date" id="targetDate" onchange="window.refreshBooking()">
           </div>
           <div>
-            <label for="itemSelect">💻 選擇設備 / 專科教室</label>
+            <label for="itemSelect">💻 選擇場地</label>
             <select id="itemSelect" onchange="window.refreshBooking()"></select>
           </div>
         </div>
@@ -369,7 +369,7 @@
           <div id="admin-t2" class="admin-tab" onclick="window.switchAdminTab(2)">🔒 批次禁借設定</div>
           <div id="admin-t3" class="admin-tab" onclick="window.switchAdminTab(3)">📊 借用統計圖表</div>
           <div id="admin-t4" class="admin-tab" onclick="window.switchAdminTab(4)">👥 帳號與權限管理</div>
-          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 設備、班級與節次設定</div>
+          <div id="admin-t5" class="admin-tab" onclick="window.switchAdminTab(5)">🛠️ 場地、班級與節次設定</div>
           <div id="admin-t6" class="admin-tab" onclick="window.switchAdminTab(6)">📑 每月預約報表</div>
         </div>
 
@@ -383,7 +383,7 @@
 
         <div id="admin-page2" style="display:none;">
           <div class="form-row">
-            <label class="title" for="resItem">💻 選擇禁借設備 / 教室</label>
+            <label class="title" for="resItem">💻 選擇場地</label>
             <select id="resItem"></select>
           </div>
           <div class="form-row">
@@ -414,7 +414,7 @@
           </div>
           <div class="form-row">
             <label class="title" for="resNote">📝 備註原因</label>
-            <input type="text" id="resNote" class="admin-input" placeholder="例如：設備維修中、期末盤點...">
+            <input type="text" id="resNote" class="admin-input" placeholder="例如：場地維修中、期末盤點...">
           </div>
           <button id="resSubmitBtn" class="btn-submit" onclick="window.submitRestrict()">確認並寫入設定</button>
         </div>
@@ -448,16 +448,16 @@
               <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">💻 設備 / 專科教室清單</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
                 <label for="newItemInput" style="display:none;">輸入新設備或教室名稱</label>
-                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入新設備或教室名稱..." aria-label="輸入新設備或教室名稱">
+                <input type="text" id="newItemInput" class="admin-input" placeholder="輸入名稱..." aria-label="輸入名稱">
                 <button class="btn-admin-active" onclick="window.addItemConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
               <div id="itemsListContainer" style="display:flex; flex-direction:column; gap:8px; height:360px; overflow-y:auto; padding-right:4px;"></div>
             </div>
 
             <div class="config-card">
-              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 班級清單設定</h3>
+              <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">🏫 學年清單設定</h3>
               <div style="display:flex; gap:8px; margin-bottom:15px; width:100%; align-items:stretch;">
-                <label for="newClassInput" style="display:none;">輸入新班級名稱</label>
+                <label for="newClassInput" style="display:none;">輸入學年名稱</label>
                 <input type="text" id="newClassInput" class="admin-input" placeholder="輸入新班級 (如: 401、科任)..." aria-label="輸入新班級名稱">
                 <button class="btn-admin-active" onclick="window.addClassConfig()" style="white-space:nowrap;">➕ 新增</button>
               </div>
@@ -491,9 +491,9 @@
               <input type="month" id="reportMonth" class="admin-input" style="max-width:170px;" onchange="window.loadMonthlyReport()">
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 設備篩選：</label>
+              <label for="reportItemFilter" style="font-weight:bold; color:var(--admin-purple); white-space:nowrap;">💻 場地篩選：</label>
               <select id="reportItemFilter" class="admin-input" style="max-width:220px;" onchange="window.loadMonthlyReport()">
-                <option value="ALL">全部設備 / 專科教室</option>
+                <option value="ALL">全部場地</option>
               </select>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -525,11 +525,11 @@
   <input type="text" id="userName" class="modal-input" readonly style="background:#f1f5f9; color:#64748b; border-style: dashed;">
   <label for="purposeType" style="font-size: 11pt; font-weight:bold; color: var(--primary);">📝 用途</label>
   <select id="purposeType" class="modal-input" onchange="window.togglePurpose()">
-    <option value="class">班級使用</option><option value="other">其他用途</option>
+    <option value="class">學年使用</option><option value="other">其他用途</option>
   </select>
   <div id="classDiv">
     <label for="classSelect" style="display:none;">選擇使用班級</label>
-    <select id="classSelect" class="modal-input" aria-label="選擇使用班級"></select>
+    <select id="classSelect" class="modal-input" aria-label="選擇使用學年"></select>
   </div>
   <div id="otherDiv" style="display:none;">
     <label for="otherPurpose" style="display:none;">請輸入其他用途</label>
